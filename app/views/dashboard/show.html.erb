@@ -1,0 +1,13 @@
+<h1>Dashboard Relawan</h1>
+
+<p>Selamat datang, <%= current_user.name %>.</p>
+
+<dl>
+  <dt>Email</dt>
+  <dd><%= current_user.email %></dd>
+
+  <dt>Role</dt>
+  <dd><%= current_user.role.humanize %></dd>
+</dl>
+
+<%= button_to "Keluar", logout_path, method: :delete %>
