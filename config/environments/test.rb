@@ -27,6 +27,11 @@ Rails.application.configure do
   config.action_controller.perform_caching = false
   config.cache_store = :null_store
 
+  # Avoid Windows file-locking errors while Sprockets compiles assets in tests.
+  config.assets.configure do |environment|
+    environment.cache = Sprockets::Cache::MemoryStore.new
+  end
+
   # Raise exceptions instead of rendering exception templates.
   config.action_dispatch.show_exceptions = false
 
