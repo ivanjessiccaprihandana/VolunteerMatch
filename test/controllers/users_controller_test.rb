@@ -23,8 +23,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
     user = User.order(:created_at).last
 
-    assert_redirected_to root_url
-    assert_equal "Akun berhasil dibuat.", flash[:notice]
+    assert_redirected_to login_url
+    assert_equal "Akun berhasil dibuat. Silakan masuk.", flash[:notice]
     assert_equal "new@example.com", user.email
     assert user.volunteer?
     assert user.authenticate("password123")

@@ -2,10 +2,6 @@
 
 <p>Buat akun untuk mengikuti kegiatan volunteer.</p>
 
-<% if notice.present? %>
-  <p><%= notice %></p>
-<% end %>
-
 <% if @user.errors.any? %>
   <section>
     <h2>Form belum dapat disimpan:</h2>
@@ -45,3 +41,8 @@
     <%= form.submit "Buat akun" %>
   </div>
 <% end %>
+
+<p>
+  Sudah memiliki akun?
+  <%= link_to "Masuk", login_path %>
+</p>
