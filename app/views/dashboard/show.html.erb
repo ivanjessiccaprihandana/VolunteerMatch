@@ -1,4 +1,4 @@
-<h1>Dashboard Relawan</h1>
+<h1>Dashboard</h1>
 
 <p>Selamat datang, <%= current_user.name %>.</p>
 
@@ -9,5 +9,7 @@
   <dt>Role</dt>
   <dd><%= current_user.role.humanize %></dd>
 </dl>
+
+<p><%= link_to "Lihat profil", profile_path %></p>
 
 <%= button_to "Keluar", logout_path, method: :delete %>

@@ -1,4 +1,6 @@
 class UsersController < ApplicationController
+  PUBLIC_ROLES = %w[volunteer organization].freeze
+
   def new
     @user = User.new
   end
@@ -16,11 +18,15 @@ class UsersController < ApplicationController
   private
 
   def user_params
-    params.require(:user).permit(
+    permitted_params = params.require(:user).permit(
       :name,
       :email,
       :password,
-      :password_confirmation
+      :password_confirmation,
+      :role
     )
+
+    permitted_params[:role] = "volunteer" unless PUBLIC_ROLES.include?(permitted_params[:role])
+    permitted_params
   end
 end
