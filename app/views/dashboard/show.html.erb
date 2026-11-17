@@ -12,4 +12,11 @@
 
 <p><%= link_to "Lihat profil", profile_path %></p>
 
+<% if current_user.organization? %>
+  <p><%= link_to "Kelola kegiatan", volunteer_events_path %></p>
+  <p><%= link_to "Buat kegiatan", new_volunteer_event_path %></p>
+<% else %>
+  <p><%= link_to "Cari kegiatan", volunteer_events_path %></p>
+<% end %>
+
 <%= button_to "Keluar", logout_path, method: :delete %>

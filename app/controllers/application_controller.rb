@@ -16,4 +16,10 @@ class ApplicationController < ActionController::Base
 
     redirect_to login_path, alert: "Silakan masuk terlebih dahulu."
   end
+
+  def require_organization
+    return if current_user&.organization?
+
+    redirect_to dashboard_path, alert: "Fitur ini hanya tersedia untuk organisasi."
+  end
 end

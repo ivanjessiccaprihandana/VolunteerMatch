@@ -1,0 +1,42 @@
+<h1><%= @event.title %></h1>
+
+<dl>
+  <dt>Organisasi</dt>
+  <dd><%= @event.organization.name %></dd>
+
+  <dt>Status</dt>
+  <dd><%= @event.status.humanize %></dd>
+
+  <dt>Kategori</dt>
+  <dd><%= @event.category %></dd>
+
+  <dt>Lokasi</dt>
+  <dd><%= @event.location %></dd>
+
+  <dt>Mulai</dt>
+  <dd><%= l @event.starts_at, format: :long %></dd>
+
+  <dt>Selesai</dt>
+  <dd><%= l @event.ends_at, format: :long %></dd>
+
+  <dt>Batas pendaftaran</dt>
+  <dd><%= l @event.registration_deadline, format: :long %></dd>
+
+  <dt>Kapasitas</dt>
+  <dd><%= @event.capacity %> relawan</dd>
+</dl>
+
+<section>
+  <h2>Deskripsi</h2>
+  <%= simple_format @event.description %>
+</section>
+
+<% if logged_in? && @event.organization == current_user %>
+  <p><%= link_to "Edit kegiatan", edit_volunteer_event_path(@event) %></p>
+  <%= button_to "Hapus kegiatan",
+                @event,
+                method: :delete,
+                form: { data: { turbo_confirm: "Yakin ingin menghapus kegiatan ini?" } } %>
+<% end %>
+
+<p><%= link_to "Kembali ke daftar kegiatan", volunteer_events_path %></p>
