@@ -1,0 +1,61 @@
+<% if event.errors.any? %>
+  <section>
+    <h2>Kegiatan belum dapat disimpan:</h2>
+
+    <ul>
+      <% event.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </section>
+<% end %>
+
+<%= form_with model: event do |form| %>
+  <div>
+    <%= form.label :title, "Nama kegiatan" %>
+    <%= form.text_field :title, required: true %>
+  </div>
+
+  <div>
+    <%= form.label :description, "Deskripsi" %>
+    <%= form.text_area :description, required: true %>
+  </div>
+
+  <div>
+    <%= form.label :category, "Kategori" %>
+    <%= form.text_field :category, required: true, placeholder: "Contoh: Lingkungan" %>
+  </div>
+
+  <div>
+    <%= form.label :location, "Lokasi" %>
+    <%= form.text_field :location, required: true %>
+  </div>
+
+  <div>
+    <%= form.label :starts_at, "Waktu mulai" %>
+    <%= form.datetime_local_field :starts_at, required: true %>
+  </div>
+
+  <div>
+    <%= form.label :ends_at, "Waktu selesai" %>
+    <%= form.datetime_local_field :ends_at, required: true %>
+  </div>
+
+  <div>
+    <%= form.label :registration_deadline, "Batas pendaftaran" %>
+    <%= form.datetime_local_field :registration_deadline, required: true %>
+  </div>
+
+  <div>
+    <%= form.label :capacity, "Kapasitas relawan" %>
+    <%= form.number_field :capacity, min: 1, required: true %>
+  </div>
+
+  <div>
+    <%= form.label :status, "Status" %>
+    <%= form.select :status,
+                    VolunteerEvent.statuses.keys.map { |status| [status.humanize, status] } %>
+  </div>
+
+  <%= form.submit event.persisted? ? "Simpan perubahan" : "Buat kegiatan" %>
+<% end %>

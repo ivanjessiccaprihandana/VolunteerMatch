@@ -3,6 +3,10 @@ class User < ApplicationRecord
 
   has_one :volunteer_profile, dependent: :destroy
   has_one :organization_profile, dependent: :destroy
+  has_many :volunteer_events,
+           foreign_key: :organization_id,
+           inverse_of: :organization,
+           dependent: :destroy
 
   enum role: {
     volunteer: 0,

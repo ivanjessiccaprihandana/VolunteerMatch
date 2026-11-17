@@ -1,0 +1,42 @@
+<h1>Kegiatan Relawan</h1>
+
+<p><%= link_to "Kembali ke dashboard", dashboard_path if logged_in? %></p>
+
+<% if logged_in? && current_user.organization? %>
+  <section>
+    <h2>Kegiatan organisasi Anda</h2>
+    <p><%= link_to "Buat kegiatan baru", new_volunteer_event_path %></p>
+
+    <% if @owned_events.any? %>
+      <ul>
+        <% @owned_events.each do |event| %>
+          <li>
+            <%= link_to event.title, event %>
+            — <%= event.status.humanize %>
+            — <%= l event.starts_at, format: :long %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p>Organisasi Anda belum membuat kegiatan.</p>
+    <% end %>
+  </section>
+<% end %>
+
+<section>
+  <h2>Kegiatan yang akan datang</h2>
+
+  <% if @events.any? %>
+    <% @events.each do |event| %>
+      <article>
+        <h3><%= link_to event.title, event %></h3>
+        <p><strong>Organisasi:</strong> <%= event.organization.name %></p>
+        <p><strong>Kategori:</strong> <%= event.category %></p>
+        <p><strong>Lokasi:</strong> <%= event.location %></p>
+        <p><strong>Mulai:</strong> <%= l event.starts_at, format: :long %></p>
+      </article>
+    <% end %>
+  <% else %>
+    <p>Belum ada kegiatan yang dipublikasikan.</p>
+  <% end %>
+</section>
