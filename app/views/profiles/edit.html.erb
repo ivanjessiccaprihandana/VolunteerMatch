@@ -1,0 +1,71 @@
+<h1>Edit Profil</h1>
+
+<% if @profile.errors.any? %>
+  <section>
+    <h2>Profil belum dapat disimpan:</h2>
+
+    <ul>
+      <% @profile.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </section>
+<% end %>
+
+<%= form_with model: @profile, url: profile_path, method: :patch do |form| %>
+  <% if current_user.volunteer? %>
+    <div>
+      <%= form.label :phone, "Nomor telepon" %>
+      <%= form.telephone_field :phone, autocomplete: "tel" %>
+    </div>
+
+    <div>
+      <%= form.label :city, "Kota" %>
+      <%= form.text_field :city %>
+    </div>
+
+    <div>
+      <%= form.label :skills, "Keahlian" %>
+      <%= form.text_area :skills %>
+    </div>
+
+    <div>
+      <%= form.label :availability, "Ketersediaan" %>
+      <%= form.text_field :availability %>
+    </div>
+
+    <div>
+      <%= form.label :bio, "Bio" %>
+      <%= form.text_area :bio %>
+    </div>
+  <% else %>
+    <div>
+      <%= form.label :organization_name, "Nama organisasi" %>
+      <%= form.text_field :organization_name %>
+    </div>
+
+    <div>
+      <%= form.label :phone, "Nomor telepon" %>
+      <%= form.telephone_field :phone, autocomplete: "tel" %>
+    </div>
+
+    <div>
+      <%= form.label :city, "Kota" %>
+      <%= form.text_field :city %>
+    </div>
+
+    <div>
+      <%= form.label :website, "Website" %>
+      <%= form.url_field :website %>
+    </div>
+
+    <div>
+      <%= form.label :description, "Deskripsi" %>
+      <%= form.text_area :description %>
+    </div>
+  <% end %>
+
+  <%= form.submit "Simpan profil" %>
+<% end %>
+
+<p><%= link_to "Batal", profile_path %></p>

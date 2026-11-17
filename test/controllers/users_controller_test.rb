@@ -5,7 +5,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     get new_user_url
 
     assert_response :success
-    assert_select "h1", "Daftar sebagai Relawan"
+    assert_select "h1", "Buat Akun VolunteerMatch"
     assert_select "form[action=?][method=?]", users_path, "post"
   end
 
@@ -28,6 +28,22 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_equal "new@example.com", user.email
     assert user.volunteer?
     assert user.authenticate("password123")
+  end
+
+  test "creates an organization account" do
+    assert_difference("User.count", 1) do
+      post users_url, params: {
+        user: {
+          name: "Pengelola Organisasi",
+          email: "organization@example.com",
+          role: "organization",
+          password: "password123",
+          password_confirmation: "password123"
+        }
+      }
+    end
+
+    assert User.order(:created_at).last.organization?
   end
 
   test "does not create a user with invalid data" do

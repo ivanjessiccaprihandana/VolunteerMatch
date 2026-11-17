@@ -1,6 +1,6 @@
-<h1>Daftar sebagai Relawan</h1>
+<h1>Buat Akun VolunteerMatch</h1>
 
-<p>Buat akun untuk mengikuti kegiatan volunteer.</p>
+<p>Daftar sebagai relawan atau organisasi penyelenggara.</p>
 
 <% if @user.errors.any? %>
   <section>
@@ -23,6 +23,12 @@
   <div>
     <%= form.label :email, "Email" %>
     <%= form.email_field :email, autocomplete: "email" %>
+  </div>
+
+  <div>
+    <%= form.label :role, "Jenis akun" %>
+    <%= form.select :role,
+                    [["Relawan", "volunteer"], ["Organisasi", "organization"]] %>
   </div>
 
   <div>

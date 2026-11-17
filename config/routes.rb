@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   delete "/logout", to: "sessions#destroy", as: :logout
 
   get "/dashboard", to: "dashboard#show", as: :dashboard
+  resource :profile, only: %i[show edit update]
 
   root "users#new"
 end

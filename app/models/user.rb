@@ -1,6 +1,9 @@
 class User < ApplicationRecord
   has_secure_password
 
+  has_one :volunteer_profile, dependent: :destroy
+  has_one :organization_profile, dependent: :destroy
+
   enum role: {
     volunteer: 0,
     organization: 1,

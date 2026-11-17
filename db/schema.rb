@@ -10,9 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_11_15_163858) do
+ActiveRecord::Schema[7.0].define(version: 2026_11_17_133001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "organization_profiles", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "organization_name", null: false
+    t.string "phone"
+    t.string "city"
+    t.text "description"
+    t.string "website"
+    t.boolean "verified", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_organization_profiles_on_user_id", unique: true
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "name", null: false
@@ -24,4 +37,18 @@ ActiveRecord::Schema[7.0].define(version: 2026_11_15_163858) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  create_table "volunteer_profiles", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "phone"
+    t.string "city"
+    t.text "bio"
+    t.text "skills"
+    t.string "availability"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_volunteer_profiles_on_user_id", unique: true
+  end
+
+  add_foreign_key "organization_profiles", "users"
+  add_foreign_key "volunteer_profiles", "users"
 end

@@ -31,7 +31,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
 
     assert_response :success
-    assert_select "h1", "Dashboard Relawan"
+    assert_select "h1", "Dashboard"
     assert_select "p", text: /Session Test/
   end
 
