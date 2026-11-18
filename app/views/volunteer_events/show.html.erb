@@ -24,6 +24,9 @@
 
   <dt>Kapasitas</dt>
   <dd><%= @event.capacity %> relawan</dd>
+
+  <dt>Sisa kapasitas</dt>
+  <dd><%= @event.remaining_capacity %> relawan</dd>
 </dl>
 
 <section>
@@ -37,6 +40,82 @@
                 @event,
                 method: :delete,
                 form: { data: { turbo_confirm: "Yakin ingin menghapus kegiatan ini?" } } %>
+
+  <section>
+    <h2>Daftar Pendaftar</h2>
+
+    <% if @event_registrations.any? %>
+      <% @event_registrations.each do |registration| %>
+        <article>
+          <h3><%= registration.volunteer.name %></h3>
+          <p><strong>Email:</strong> <%= registration.volunteer.email %></p>
+          <p><strong>Motivasi:</strong> <%= registration.motivation %></p>
+          <p><strong>Status:</strong> <%= registration.status.humanize %></p>
+
+          <% if registration.pending? %>
+            <%= button_to "Terima",
+                          accept_volunteer_event_event_registration_path(
+                            @event,
+                            registration
+                          ),
+                          method: :patch %>
+            <%= button_to "Tolak",
+                          reject_volunteer_event_event_registration_path(
+                            @event,
+                            registration
+                          ),
+                          method: :patch %>
+          <% end %>
+        </article>
+      <% end %>
+    <% else %>
+      <p>Belum ada relawan yang mendaftar.</p>
+    <% end %>
+  </section>
+<% elsif logged_in? && current_user.volunteer? %>
+  <section>
+    <h2>Pendaftaran Relawan</h2>
+
+    <% if @event_registration.persisted? %>
+      <p>
+        Status pendaftaran Anda:
+        <strong><%= @event_registration.status.humanize %></strong>
+      </p>
+      <p><strong>Motivasi:</strong> <%= @event_registration.motivation %></p>
+
+      <% if @event_registration.pending? || @event_registration.accepted? %>
+        <%= button_to "Batalkan pendaftaran",
+                      cancel_volunteer_event_event_registration_path(
+                        @event,
+                        @event_registration
+                      ),
+                      method: :patch,
+                      form: {
+                        data: {
+                          turbo_confirm: "Yakin ingin membatalkan pendaftaran?"
+                        }
+                      } %>
+      <% end %>
+    <% elsif @event.registration_open? %>
+      <%= form_with model: [@event, @event_registration] do |form| %>
+        <div>
+          <%= form.label :motivation, "Alasan ingin mengikuti kegiatan" %>
+          <%= form.text_area :motivation,
+                             required: true,
+                             maxlength: 1_000 %>
+        </div>
+
+        <%= form.submit "Daftar sebagai relawan" %>
+      <% end %>
+    <% else %>
+      <p>Pendaftaran kegiatan ini sudah ditutup.</p>
+    <% end %>
+  </section>
+<% elsif !logged_in? && @event.registration_open? %>
+  <p>
+    <%= link_to "Masuk sebagai relawan", login_path %>
+    untuk mendaftar kegiatan ini.
+  </p>
 <% end %>
 
 <p><%= link_to "Kembali ke daftar kegiatan", volunteer_events_path %></p>

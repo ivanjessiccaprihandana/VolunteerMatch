@@ -7,6 +7,13 @@ class User < ApplicationRecord
            foreign_key: :organization_id,
            inverse_of: :organization,
            dependent: :destroy
+  has_many :event_registrations,
+           foreign_key: :volunteer_id,
+           inverse_of: :volunteer,
+           dependent: :destroy
+  has_many :registered_volunteer_events,
+           through: :event_registrations,
+           source: :volunteer_event
 
   enum role: {
     volunteer: 0,

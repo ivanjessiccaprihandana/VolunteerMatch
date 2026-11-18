@@ -1,5 +1,9 @@
 class VolunteerEvent < ApplicationRecord
   belongs_to :organization, class_name: "User", inverse_of: :volunteer_events
+  has_many :event_registrations, dependent: :destroy
+  has_many :registered_volunteers,
+           through: :event_registrations,
+           source: :volunteer
 
   enum status: {
     draft: 0,
@@ -26,6 +30,20 @@ class VolunteerEvent < ApplicationRecord
   validate :organization_account_required
   validate :ends_after_start
   validate :registration_closes_before_start
+
+  def registration_open?
+    published? &&
+      registration_deadline.present? &&
+      registration_deadline.future? &&
+      starts_at.present? &&
+      starts_at.future? &&
+      capacity.present? &&
+      event_registrations.accepted.count < capacity
+  end
+
+  def remaining_capacity
+    [capacity - event_registrations.accepted.count, 0].max
+  end
 
   private
 

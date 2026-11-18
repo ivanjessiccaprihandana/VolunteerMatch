@@ -14,6 +14,15 @@ class VolunteerEventsController < ApplicationController
   end
 
   def show
+    if logged_in? && current_user.volunteer?
+      @event_registration = @event.event_registrations.find_by(
+        volunteer: current_user
+      ) || @event.event_registrations.build
+    elsif logged_in? && @event.organization == current_user
+      @event_registrations = @event.event_registrations
+                                    .includes(:volunteer)
+                                    .order(created_at: :asc)
+    end
   end
 
   def new
