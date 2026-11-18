@@ -10,9 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_11_17_140000) do
+ActiveRecord::Schema[7.0].define(version: 2026_11_18_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "event_registrations", force: :cascade do |t|
+    t.bigint "volunteer_id", null: false
+    t.bigint "volunteer_event_id", null: false
+    t.text "motivation", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["volunteer_event_id", "volunteer_id"], name: "index_event_registrations_on_event_and_volunteer", unique: true
+    t.index ["volunteer_event_id"], name: "index_event_registrations_on_volunteer_event_id"
+    t.index ["volunteer_id"], name: "index_event_registrations_on_volunteer_id"
+  end
 
   create_table "organization_profiles", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -66,6 +78,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_11_17_140000) do
     t.index ["user_id"], name: "index_volunteer_profiles_on_user_id", unique: true
   end
 
+  add_foreign_key "event_registrations", "users", column: "volunteer_id"
+  add_foreign_key "event_registrations", "volunteer_events"
   add_foreign_key "organization_profiles", "users"
   add_foreign_key "volunteer_events", "users", column: "organization_id"
   add_foreign_key "volunteer_profiles", "users"

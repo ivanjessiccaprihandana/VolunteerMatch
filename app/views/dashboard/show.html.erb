@@ -15,8 +15,26 @@
 <% if current_user.organization? %>
   <p><%= link_to "Kelola kegiatan", volunteer_events_path %></p>
   <p><%= link_to "Buat kegiatan", new_volunteer_event_path %></p>
-<% else %>
+<% elsif current_user.volunteer? %>
   <p><%= link_to "Cari kegiatan", volunteer_events_path %></p>
+
+  <section>
+    <h2>Pendaftaran Saya</h2>
+
+    <% if @event_registrations.any? %>
+      <ul>
+        <% @event_registrations.each do |registration| %>
+          <li>
+            <%= link_to registration.volunteer_event.title,
+                        registration.volunteer_event %>
+            — <%= registration.status.humanize %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p>Anda belum mendaftar kegiatan apa pun.</p>
+    <% end %>
+  </section>
 <% end %>
 
 <%= button_to "Keluar", logout_path, method: :delete %>

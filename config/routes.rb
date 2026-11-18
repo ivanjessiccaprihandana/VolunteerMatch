@@ -7,7 +7,15 @@ Rails.application.routes.draw do
 
   get "/dashboard", to: "dashboard#show", as: :dashboard
   resource :profile, only: %i[show edit update]
-  resources :volunteer_events
+  resources :volunteer_events do
+    resources :event_registrations, only: :create do
+      member do
+        patch :accept
+        patch :reject
+        patch :cancel
+      end
+    end
+  end
 
   root "users#new"
 end

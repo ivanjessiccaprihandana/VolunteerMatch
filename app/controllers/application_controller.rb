@@ -22,4 +22,10 @@ class ApplicationController < ActionController::Base
 
     redirect_to dashboard_path, alert: "Fitur ini hanya tersedia untuk organisasi."
   end
+
+  def require_volunteer
+    return if current_user&.volunteer?
+
+    redirect_to dashboard_path, alert: "Fitur ini hanya tersedia untuk relawan."
+  end
 end
