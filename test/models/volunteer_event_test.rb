@@ -58,4 +58,54 @@ class VolunteerEventTest < ActiveSupport::TestCase
     assert event.errors[:registration_deadline].any?
     assert event.errors[:capacity].any?
   end
+
+  test "searches title and description case insensitively" do
+    river_event = VolunteerEvent.create!(
+      @attributes.merge(title: "Aksi Bersih Sungai")
+    )
+    reading_event = VolunteerEvent.create!(
+      @attributes.merge(
+        title: "Berbagi Buku",
+        description: "Mengadakan kelas membaca untuk anak."
+      )
+    )
+
+    assert_includes VolunteerEvent.matching_text("SUNGAI"), river_event
+    assert_includes VolunteerEvent.matching_text("membaca"), reading_event
+    assert_not_includes VolunteerEvent.matching_text("sungai"), reading_event
+  end
+
+  test "treats search wildcard characters as ordinary text" do
+    percentage_event = VolunteerEvent.create!(
+      @attributes.merge(title: "100% Peduli Lingkungan")
+    )
+    ordinary_event = VolunteerEvent.create!(
+      @attributes.merge(title: "1000 Pohon")
+    )
+
+    results = VolunteerEvent.matching_text("100%")
+
+    assert_includes results, percentage_event
+    assert_not_includes results, ordinary_event
+  end
+
+  test "filters category location and start date" do
+    target_date = 3.weeks.from_now.to_date
+    target_start = target_date.in_time_zone + 9.hours
+    target_event = VolunteerEvent.create!(
+      @attributes.merge(
+        category: "Pendidikan",
+        location: "Jakarta Selatan",
+        starts_at: target_start,
+        ends_at: target_start + 3.hours
+      )
+    )
+
+    results = VolunteerEvent
+              .in_category("Pendidikan")
+              .in_location("jakarta")
+              .starting_on(target_date)
+
+    assert_equal [target_event], results.to_a
+  end
 end

@@ -26,6 +26,39 @@
 <section>
   <h2>Kegiatan yang akan datang</h2>
 
+  <%= form_with url: volunteer_events_path, method: :get do |form| %>
+    <div>
+      <%= form.label :query, "Cari kegiatan" %>
+      <%= form.search_field :query,
+                            value: params[:query],
+                            placeholder: "Judul atau deskripsi" %>
+    </div>
+
+    <div>
+      <%= form.label :category, "Kategori" %>
+      <%= form.select :category,
+                      options_for_select(@categories, params[:category]),
+                      { include_blank: "Semua kategori" } %>
+    </div>
+
+    <div>
+      <%= form.label :location, "Lokasi" %>
+      <%= form.search_field :location,
+                            value: params[:location],
+                            placeholder: "Kota atau tempat" %>
+    </div>
+
+    <div>
+      <%= form.label :date, "Tanggal mulai" %>
+      <%= form.date_field :date, value: params[:date] %>
+    </div>
+
+    <%= form.submit "Terapkan filter" %>
+    <%= link_to "Reset filter", volunteer_events_path %>
+  <% end %>
+
+  <p><%= @events.size %> kegiatan ditemukan.</p>
+
   <% if @events.any? %>
     <% @events.each do |event| %>
       <article>
@@ -37,6 +70,6 @@
       </article>
     <% end %>
   <% else %>
-    <p>Belum ada kegiatan yang dipublikasikan.</p>
+    <p>Tidak ada kegiatan yang sesuai dengan filter.</p>
   <% end %>
 </section>

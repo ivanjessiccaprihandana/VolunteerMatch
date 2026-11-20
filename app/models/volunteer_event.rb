@@ -16,6 +16,31 @@ class VolunteerEvent < ApplicationRecord
     published.where("starts_at >= ?", Time.current).order(:starts_at)
   }
 
+  def self.matching_text(query)
+    return all if query.blank?
+
+    pattern = "%#{sanitize_sql_like(query.strip)}%"
+    where(
+      "title ILIKE :pattern OR description ILIKE :pattern",
+      pattern: pattern
+    )
+  end
+
+  def self.in_category(category)
+    category.present? ? where(category: category) : all
+  end
+
+  def self.in_location(location)
+    return all if location.blank?
+
+    pattern = "%#{sanitize_sql_like(location.strip)}%"
+    where("location ILIKE ?", pattern)
+  end
+
+  def self.starting_on(date)
+    date.present? ? where(starts_at: date.all_day) : all
+  end
+
   validates :title, presence: true
   validates :description, presence: true
   validates :category, presence: true

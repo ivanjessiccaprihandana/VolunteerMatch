@@ -41,6 +41,59 @@ class VolunteerEventsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to volunteer_events_url
   end
 
+  test "public can search event title and description" do
+    matching = create_event(title: "Aksi Bersih Sungai")
+    other = create_event(
+      title: "Mengajar Bersama",
+      description: "Kelas membaca untuk anak-anak."
+    )
+
+    get volunteer_events_url, params: { query: "sungai" }
+
+    assert_response :success
+    assert_select "a[href=?]", volunteer_event_path(matching), text: matching.title
+    assert_select "a[href=?]", volunteer_event_path(other), count: 0
+  end
+
+  test "public can combine category and location filters" do
+    matching = create_event(
+      title: "Kelas Akhir Pekan",
+      category: "Pendidikan",
+      location: "Jakarta Selatan"
+    )
+    other = create_event(
+      title: "Tanam Pohon Kota",
+      category: "Lingkungan",
+      location: "Jakarta Selatan"
+    )
+
+    get volunteer_events_url, params: {
+      category: "Pendidikan",
+      location: "jakarta"
+    }
+
+    assert_response :success
+    assert_select "a[href=?]", volunteer_event_path(matching), text: matching.title
+    assert_select "a[href=?]", volunteer_event_path(other), count: 0
+  end
+
+  test "public can filter events by start date" do
+    target_date = 12.days.from_now.to_date
+    target_start = target_date.in_time_zone + 9.hours
+    matching = create_event(
+      title: "Kegiatan Hari Pilihan",
+      starts_at: target_start,
+      ends_at: target_start + 3.hours
+    )
+    other = create_event(title: "Kegiatan Hari Lain")
+
+    get volunteer_events_url, params: { date: target_date.iso8601 }
+
+    assert_response :success
+    assert_select "a[href=?]", volunteer_event_path(matching), text: matching.title
+    assert_select "a[href=?]", volunteer_event_path(other), count: 0
+  end
+
   test "organization can create an event" do
     login_as(@organization)
 
