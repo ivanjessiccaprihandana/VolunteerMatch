@@ -3,8 +3,9 @@ require_relative "../config/environment"
 require "rails/test_help"
 
 class ActiveSupport::TestCase
-  # Run tests in parallel with specified workers
-  parallelize(workers: :number_of_processors, with: :threads)
+  # Keep fixtures sequential on Windows. Parallel fixture loading can cause
+  # PostgreSQL connection and transaction errors once the suite exceeds the
+  # Rails parallelization threshold.
 
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all

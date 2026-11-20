@@ -5,7 +5,14 @@ class VolunteerEventsController < ApplicationController
   before_action :set_owned_event, only: %i[edit update destroy]
 
   def index
-    @events = VolunteerEvent.upcoming
+    upcoming_events = VolunteerEvent.upcoming
+    @categories = upcoming_events.reorder(:category).distinct.pluck(:category)
+    @filter_date = parsed_filter_date
+    @events = upcoming_events
+              .matching_text(params[:query])
+              .in_category(params[:category])
+              .in_location(params[:location])
+              .starting_on(@filter_date)
     @owned_events = if logged_in? && current_user.organization?
                       current_user.volunteer_events.order(starts_at: :asc)
                     else
@@ -56,6 +63,14 @@ class VolunteerEventsController < ApplicationController
   end
 
   private
+
+  def parsed_filter_date
+    return if params[:date].blank?
+
+    Date.iso8601(params[:date])
+  rescue Date::Error
+    nil
+  end
 
   def set_visible_event
     @event = VolunteerEvent.find(params[:id])
