@@ -1,46 +1,40 @@
-<h1>Profil <%= current_user.organization? ? "Organisasi" : "Relawan" %></h1>
+<header class="page-header">
+  <div class="page-header__copy">
+    <p class="eyebrow">Identitas akun</p>
+    <h1>Profil <%= current_user.organization? ? "Organisasi" : "Relawan" %></h1>
+    <p class="lead">Lengkapi informasi agar kolaborasi menjadi lebih mudah.</p>
+  </div>
+  <div class="actions">
+    <%= link_to "Kembali", dashboard_path, class: "button button--secondary" %>
+    <%= link_to "Edit profil", edit_profile_path, class: "button" %>
+  </div>
+</header>
 
-<% if current_user.volunteer? %>
-  <dl>
-    <dt>Nama</dt>
-    <dd><%= current_user.name %></dd>
-
-    <dt>Kota</dt>
-    <dd><%= @profile.city.presence || "Belum diisi" %></dd>
-
-    <dt>Telepon</dt>
-    <dd><%= @profile.phone.presence || "Belum diisi" %></dd>
-
-    <dt>Keahlian</dt>
-    <dd><%= @profile.skills.presence || "Belum diisi" %></dd>
-
-    <dt>Ketersediaan</dt>
-    <dd><%= @profile.availability.presence || "Belum diisi" %></dd>
-
-    <dt>Bio</dt>
-    <dd><%= @profile.bio.presence || "Belum diisi" %></dd>
-  </dl>
-<% else %>
-  <dl>
-    <dt>Nama organisasi</dt>
-    <dd><%= @profile.organization_name.presence || "Belum diisi" %></dd>
-
-    <dt>Kota</dt>
-    <dd><%= @profile.city.presence || "Belum diisi" %></dd>
-
-    <dt>Telepon</dt>
-    <dd><%= @profile.phone.presence || "Belum diisi" %></dd>
-
-    <dt>Website</dt>
-    <dd><%= @profile.website.presence || "Belum diisi" %></dd>
-
-    <dt>Deskripsi</dt>
-    <dd><%= @profile.description.presence || "Belum diisi" %></dd>
-
-    <dt>Status verifikasi</dt>
-    <dd><%= @profile.verified? ? "Terverifikasi" : "Belum terverifikasi" %></dd>
-  </dl>
-<% end %>
-
-<p><%= link_to "Edit profil", edit_profile_path %></p>
-<p><%= link_to "Kembali ke dashboard", dashboard_path %></p>
+<section class="panel">
+  <% if current_user.volunteer? %>
+    <dl class="info-grid">
+      <div><dt>Nama</dt><dd><%= current_user.name %></dd></div>
+      <div><dt>Kota</dt><dd><%= @profile.city.presence || "Belum diisi" %></dd></div>
+      <div><dt>Telepon</dt><dd><%= @profile.phone.presence || "Belum diisi" %></dd></div>
+      <div><dt>Keahlian</dt><dd><%= @profile.skills.presence || "Belum diisi" %></dd></div>
+      <div><dt>Ketersediaan</dt><dd><%= @profile.availability.presence || "Belum diisi" %></dd></div>
+      <div><dt>Bio</dt><dd><%= @profile.bio.presence || "Belum diisi" %></dd></div>
+    </dl>
+  <% else %>
+    <dl class="info-grid">
+      <div><dt>Nama organisasi</dt><dd><%= @profile.organization_name.presence || "Belum diisi" %></dd></div>
+      <div><dt>Kota</dt><dd><%= @profile.city.presence || "Belum diisi" %></dd></div>
+      <div><dt>Telepon</dt><dd><%= @profile.phone.presence || "Belum diisi" %></dd></div>
+      <div><dt>Website</dt><dd><%= @profile.website.presence || "Belum diisi" %></dd></div>
+      <div><dt>Deskripsi</dt><dd><%= @profile.description.presence || "Belum diisi" %></dd></div>
+      <div>
+        <dt>Status verifikasi</dt>
+        <dd>
+          <span class="badge <%= "badge--pending" unless @profile.verified? %>">
+            <%= @profile.verified? ? "Terverifikasi" : "Belum terverifikasi" %>
+          </span>
+        </dd>
+      </div>
+    </dl>
+  <% end %>
+</section>

@@ -1,5 +1,14 @@
-<h1>Edit Kegiatan Relawan</h1>
+<header class="page-header">
+  <div class="page-header__copy">
+    <p class="eyebrow">Perbarui informasi</p>
+    <h1>Edit Kegiatan Relawan</h1>
+    <p class="lead">Pastikan informasi kegiatan tetap akurat untuk relawan.</p>
+  </div>
+  <%= link_to "Batal",
+              volunteer_event_path(@event),
+              class: "button button--secondary" %>
+</header>
 
-<%= render "form", event: @event %>
-
-<p><%= link_to "Batal", volunteer_event_path(@event) %></p>
+<section class="panel">
+  <%= render "form", event: @event %>
+</section>
