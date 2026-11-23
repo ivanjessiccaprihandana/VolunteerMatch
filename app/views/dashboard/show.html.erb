@@ -1,40 +1,73 @@
-<h1>Dashboard</h1>
+<header class="page-header">
+  <div class="page-header__copy">
+    <p class="eyebrow"><%= current_user.role.humanize %> workspace</p>
+    <h1>Dashboard</h1>
+    <p class="lead">Selamat datang, <%= current_user.name %>. Siap membuat dampak hari ini?</p>
+  </div>
 
-<p>Selamat datang, <%= current_user.name %>.</p>
-
-<dl>
-  <dt>Email</dt>
-  <dd><%= current_user.email %></dd>
-
-  <dt>Role</dt>
-  <dd><%= current_user.role.humanize %></dd>
-</dl>
-
-<p><%= link_to "Lihat profil", profile_path %></p>
-
-<% if current_user.organization? %>
-  <p><%= link_to "Kelola kegiatan", volunteer_events_path %></p>
-  <p><%= link_to "Buat kegiatan", new_volunteer_event_path %></p>
-<% elsif current_user.volunteer? %>
-  <p><%= link_to "Cari kegiatan", volunteer_events_path %></p>
-
-  <section>
-    <h2>Pendaftaran Saya</h2>
-
-    <% if @event_registrations.any? %>
-      <ul>
-        <% @event_registrations.each do |registration| %>
-          <li>
-            <%= link_to registration.volunteer_event.title,
-                        registration.volunteer_event %>
-            — <%= registration.status.humanize %>
-          </li>
-        <% end %>
-      </ul>
+  <div class="actions">
+    <%= link_to "Lihat profil", profile_path, class: "button button--secondary" %>
+    <% if current_user.organization? %>
+      <%= link_to "Buat kegiatan", new_volunteer_event_path, class: "button" %>
     <% else %>
-      <p>Anda belum mendaftar kegiatan apa pun.</p>
+      <%= link_to "Cari kegiatan", volunteer_events_path, class: "button" %>
     <% end %>
-  </section>
-<% end %>
+  </div>
+</header>
 
-<%= button_to "Keluar", logout_path, method: :delete %>
+<div class="dashboard-grid">
+  <aside class="profile-summary card">
+    <div class="avatar" aria-hidden="true">
+      <%= current_user.name.to_s.first(2).upcase %>
+    </div>
+    <h2><%= current_user.name %></h2>
+    <p class="text-muted"><%= current_user.email %></p>
+    <span class="badge"><%= current_user.role.humanize %></span>
+  </aside>
+
+  <div>
+    <% if current_user.organization? %>
+      <section class="panel">
+        <p class="eyebrow">Pusat organisasi</p>
+        <h2>Kelola kontribusi Anda</h2>
+        <div class="quick-actions">
+          <article class="quick-action card">
+            <h3>Daftar kegiatan</h3>
+            <p>Lihat kegiatan aktif, draft, dan daftar relawan.</p>
+            <%= link_to "Kelola kegiatan →", volunteer_events_path %>
+          </article>
+          <article class="quick-action card">
+            <h3>Kegiatan baru</h3>
+            <p>Publikasikan kesempatan relawan yang baru.</p>
+            <%= link_to "Buat kegiatan →", new_volunteer_event_path %>
+          </article>
+        </div>
+      </section>
+    <% elsif current_user.volunteer? %>
+      <section class="panel">
+        <p class="eyebrow">Aktivitas terbaru</p>
+        <h2>Pendaftaran Saya</h2>
+
+        <% if @event_registrations.any? %>
+          <ul class="list-clean">
+            <% @event_registrations.each do |registration| %>
+              <li class="list-item">
+                <%= link_to registration.volunteer_event.title,
+                            registration.volunteer_event %>
+                <span class="badge badge--<%= registration.status %>">
+                  <%= registration.status.humanize %>
+                </span>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <div class="empty-state">
+            <h3>Belum ada pendaftaran</h3>
+            <p>Temukan kegiatan yang sesuai dengan minat dan waktu Anda.</p>
+            <%= link_to "Jelajahi kegiatan", volunteer_events_path, class: "button" %>
+          </div>
+        <% end %>
+      </section>
+    <% end %>
+  </div>
+</div>

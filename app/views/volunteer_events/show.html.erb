@@ -1,121 +1,152 @@
-<h1><%= @event.title %></h1>
+<header class="page-header">
+  <div class="page-header__copy">
+    <p class="eyebrow"><%= @event.category %></p>
+    <h1><%= @event.title %></h1>
+    <p class="lead">Diselenggarakan oleh <%= @event.organization.name %></p>
+  </div>
+  <span class="badge badge--<%= @event.status %>"><%= @event.status.humanize %></span>
+</header>
 
-<dl>
-  <dt>Organisasi</dt>
-  <dd><%= @event.organization.name %></dd>
+<div class="event-detail">
+  <div>
+    <section class="panel">
+      <p class="eyebrow">Tentang kegiatan</p>
+      <h2>Deskripsi</h2>
+      <%= simple_format @event.description %>
+    </section>
 
-  <dt>Status</dt>
-  <dd><%= @event.status.humanize %></dd>
-
-  <dt>Kategori</dt>
-  <dd><%= @event.category %></dd>
-
-  <dt>Lokasi</dt>
-  <dd><%= @event.location %></dd>
-
-  <dt>Mulai</dt>
-  <dd><%= l @event.starts_at, format: :long %></dd>
-
-  <dt>Selesai</dt>
-  <dd><%= l @event.ends_at, format: :long %></dd>
-
-  <dt>Batas pendaftaran</dt>
-  <dd><%= l @event.registration_deadline, format: :long %></dd>
-
-  <dt>Kapasitas</dt>
-  <dd><%= @event.capacity %> relawan</dd>
-
-  <dt>Sisa kapasitas</dt>
-  <dd><%= @event.remaining_capacity %> relawan</dd>
-</dl>
-
-<section>
-  <h2>Deskripsi</h2>
-  <%= simple_format @event.description %>
-</section>
-
-<% if logged_in? && @event.organization == current_user %>
-  <p><%= link_to "Edit kegiatan", edit_volunteer_event_path(@event) %></p>
-  <%= button_to "Hapus kegiatan",
-                @event,
-                method: :delete,
-                form: { data: { turbo_confirm: "Yakin ingin menghapus kegiatan ini?" } } %>
-
-  <section>
-    <h2>Daftar Pendaftar</h2>
-
-    <% if @event_registrations.any? %>
-      <% @event_registrations.each do |registration| %>
-        <article>
-          <h3><%= registration.volunteer.name %></h3>
-          <p><strong>Email:</strong> <%= registration.volunteer.email %></p>
-          <p><strong>Motivasi:</strong> <%= registration.motivation %></p>
-          <p><strong>Status:</strong> <%= registration.status.humanize %></p>
-
-          <% if registration.pending? %>
-            <%= button_to "Terima",
-                          accept_volunteer_event_event_registration_path(
-                            @event,
-                            registration
-                          ),
-                          method: :patch %>
-            <%= button_to "Tolak",
-                          reject_volunteer_event_event_registration_path(
-                            @event,
-                            registration
-                          ),
-                          method: :patch %>
-          <% end %>
-        </article>
-      <% end %>
-    <% else %>
-      <p>Belum ada relawan yang mendaftar.</p>
-    <% end %>
-  </section>
-<% elsif logged_in? && current_user.volunteer? %>
-  <section>
-    <h2>Pendaftaran Relawan</h2>
-
-    <% if @event_registration.persisted? %>
-      <p>
-        Status pendaftaran Anda:
-        <strong><%= @event_registration.status.humanize %></strong>
-      </p>
-      <p><strong>Motivasi:</strong> <%= @event_registration.motivation %></p>
-
-      <% if @event_registration.pending? || @event_registration.accepted? %>
-        <%= button_to "Batalkan pendaftaran",
-                      cancel_volunteer_event_event_registration_path(
-                        @event,
-                        @event_registration
-                      ),
-                      method: :patch,
-                      form: {
-                        data: {
-                          turbo_confirm: "Yakin ingin membatalkan pendaftaran?"
-                        }
-                      } %>
-      <% end %>
-    <% elsif @event.registration_open? %>
-      <%= form_with model: [@event, @event_registration] do |form| %>
-        <div>
-          <%= form.label :motivation, "Alasan ingin mengikuti kegiatan" %>
-          <%= form.text_area :motivation,
-                             required: true,
-                             maxlength: 1_000 %>
+    <% if logged_in? && @event.organization == current_user %>
+      <section class="panel">
+        <div class="page-header">
+          <div>
+            <p class="eyebrow">Manajemen relawan</p>
+            <h2>Daftar Pendaftar</h2>
+          </div>
         </div>
 
-        <%= form.submit "Daftar sebagai relawan" %>
-      <% end %>
-    <% else %>
-      <p>Pendaftaran kegiatan ini sudah ditutup.</p>
-    <% end %>
-  </section>
-<% elsif !logged_in? && @event.registration_open? %>
-  <p>
-    <%= link_to "Masuk sebagai relawan", login_path %>
-    untuk mendaftar kegiatan ini.
-  </p>
-<% end %>
+        <% if @event_registrations.any? %>
+          <% @event_registrations.each do |registration| %>
+            <article class="application-card">
+              <div class="application-card__header">
+                <h3><%= registration.volunteer.name %></h3>
+                <span class="badge badge--<%= registration.status %>">
+                  <%= registration.status.humanize %>
+                </span>
+              </div>
+              <p><strong>Email:</strong> <%= registration.volunteer.email %></p>
+              <p><strong>Motivasi:</strong> <%= registration.motivation %></p>
 
-<p><%= link_to "Kembali ke daftar kegiatan", volunteer_events_path %></p>
+              <% if registration.pending? %>
+                <div class="actions">
+                  <%= button_to "Terima",
+                                accept_volunteer_event_event_registration_path(
+                                  @event,
+                                  registration
+                                ),
+                                method: :patch %>
+                  <%= button_to "Tolak",
+                                reject_volunteer_event_event_registration_path(
+                                  @event,
+                                  registration
+                                ),
+                                method: :patch,
+                                class: "button--danger" %>
+                </div>
+              <% end %>
+            </article>
+          <% end %>
+        <% else %>
+          <div class="empty-state">
+            <h3>Belum ada pendaftar</h3>
+            <p>Pendaftar baru akan muncul di bagian ini.</p>
+          </div>
+        <% end %>
+      </section>
+    <% elsif logged_in? && current_user.volunteer? %>
+      <section class="panel">
+        <p class="eyebrow">Ambil bagian</p>
+        <h2>Pendaftaran Relawan</h2>
+
+        <% if @event_registration.persisted? %>
+          <div class="application-card">
+            <div class="application-card__header">
+              <strong>Status pendaftaran Anda</strong>
+              <span class="badge badge--<%= @event_registration.status %>">
+                <%= @event_registration.status.humanize %>
+              </span>
+            </div>
+            <p><strong>Motivasi:</strong> <%= @event_registration.motivation %></p>
+
+            <% if @event_registration.pending? || @event_registration.accepted? %>
+              <%= button_to "Batalkan pendaftaran",
+                            cancel_volunteer_event_event_registration_path(
+                              @event,
+                              @event_registration
+                            ),
+                            method: :patch,
+                            class: "button--danger",
+                            form: {
+                              data: {
+                                turbo_confirm: "Yakin ingin membatalkan pendaftaran?"
+                              }
+                            } %>
+            <% end %>
+          </div>
+        <% elsif @event.registration_open? %>
+          <%= form_with model: [@event, @event_registration], class: "form-stack" do |form| %>
+            <div class="field">
+              <%= form.label :motivation, "Alasan ingin mengikuti kegiatan" %>
+              <%= form.text_area :motivation,
+                                 required: true,
+                                 maxlength: 1_000,
+                                 placeholder: "Ceritakan motivasi dan kontribusi yang ingin Anda berikan" %>
+            </div>
+            <%= form.submit "Daftar sebagai relawan" %>
+          <% end %>
+        <% else %>
+          <div class="empty-state">
+            <h3>Pendaftaran ditutup</h3>
+            <p>Kapasitas penuh atau batas pendaftaran telah berakhir.</p>
+          </div>
+        <% end %>
+      </section>
+    <% elsif !logged_in? && @event.registration_open? %>
+      <section class="panel">
+        <h2>Ingin mengikuti kegiatan ini?</h2>
+        <p class="text-muted">Masuk sebagai relawan untuk mengirim pendaftaran.</p>
+        <%= link_to "Masuk untuk mendaftar", login_path, class: "button" %>
+      </section>
+    <% end %>
+  </div>
+
+  <aside class="event-detail__sidebar">
+    <section class="panel">
+      <p class="eyebrow">Informasi kegiatan</p>
+      <dl class="info-grid">
+        <div><dt>Lokasi</dt><dd><%= @event.location %></dd></div>
+        <div><dt>Mulai</dt><dd><%= l @event.starts_at, format: :long %></dd></div>
+        <div><dt>Selesai</dt><dd><%= l @event.ends_at, format: :long %></dd></div>
+        <div><dt>Batas daftar</dt><dd><%= l @event.registration_deadline, format: :long %></dd></div>
+        <div><dt>Kapasitas</dt><dd><%= @event.capacity %> relawan</dd></div>
+        <div><dt>Sisa slot</dt><dd><%= @event.remaining_capacity %> relawan</dd></div>
+      </dl>
+
+      <% if logged_in? && @event.organization == current_user %>
+        <div class="actions actions--spaced">
+          <%= link_to "Edit", edit_volunteer_event_path(@event), class: "button" %>
+          <%= button_to "Hapus",
+                        @event,
+                        method: :delete,
+                        class: "button--danger",
+                        form: {
+                          data: {
+                            turbo_confirm: "Yakin ingin menghapus kegiatan ini?"
+                          }
+                        } %>
+        </div>
+      <% end %>
+    </section>
+
+    <%= link_to "← Kembali ke daftar kegiatan", volunteer_events_path %>
+  </aside>
+</div>

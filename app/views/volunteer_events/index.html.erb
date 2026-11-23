@@ -1,75 +1,114 @@
-<h1>Kegiatan Relawan</h1>
+<header class="page-header">
+  <div class="page-header__copy">
+    <p class="eyebrow">Temukan kesempatan</p>
+    <h1>Kegiatan Relawan</h1>
+    <p class="lead">
+      Cari kegiatan yang sesuai dengan minat, lokasi, dan waktu Anda.
+    </p>
+  </div>
 
-<p><%= link_to "Kembali ke dashboard", dashboard_path if logged_in? %></p>
+  <% if logged_in? && current_user.organization? %>
+    <%= link_to "Buat kegiatan", new_volunteer_event_path, class: "button" %>
+  <% end %>
+</header>
 
 <% if logged_in? && current_user.organization? %>
-  <section>
+  <section class="panel">
+    <p class="eyebrow">Workspace organisasi</p>
     <h2>Kegiatan organisasi Anda</h2>
-    <p><%= link_to "Buat kegiatan baru", new_volunteer_event_path %></p>
 
     <% if @owned_events.any? %>
-      <ul>
+      <ul class="list-clean">
         <% @owned_events.each do |event| %>
-          <li>
-            <%= link_to event.title, event %>
-            — <%= event.status.humanize %>
-            — <%= l event.starts_at, format: :long %>
+          <li class="list-item">
+            <div>
+              <%= link_to event.title, event %>
+              <div class="text-muted"><%= l event.starts_at, format: :long %></div>
+            </div>
+            <span class="badge badge--<%= event.status %>">
+              <%= event.status.humanize %>
+            </span>
           </li>
         <% end %>
       </ul>
     <% else %>
-      <p>Organisasi Anda belum membuat kegiatan.</p>
+      <div class="empty-state">
+        <h3>Belum ada kegiatan</h3>
+        <p>Mulai buat kesempatan relawan pertama untuk organisasi Anda.</p>
+        <%= link_to "Buat kegiatan baru", new_volunteer_event_path, class: "button" %>
+      </div>
     <% end %>
   </section>
 <% end %>
 
 <section>
-  <h2>Kegiatan yang akan datang</h2>
-
-  <%= form_with url: volunteer_events_path, method: :get do |form| %>
+  <div class="page-header">
     <div>
-      <%= form.label :query, "Cari kegiatan" %>
-      <%= form.search_field :query,
-                            value: params[:query],
-                            placeholder: "Judul atau deskripsi" %>
+      <p class="eyebrow">Jelajahi</p>
+      <h2>Kegiatan yang akan datang</h2>
+    </div>
+    <p class="results-count"><%= @events.size %> kegiatan ditemukan</p>
+  </div>
+
+  <%= form_with url: volunteer_events_path,
+                method: :get,
+                class: "filter-panel panel" do |form| %>
+    <div class="filter-grid">
+      <div class="field">
+        <%= form.label :query, "Cari kegiatan" %>
+        <%= form.search_field :query,
+                              value: params[:query],
+                              placeholder: "Judul atau deskripsi" %>
+      </div>
+      <div class="field">
+        <%= form.label :category, "Kategori" %>
+        <%= form.select :category,
+                        options_for_select(@categories, params[:category]),
+                        { include_blank: "Semua kategori" } %>
+      </div>
+      <div class="field">
+        <%= form.label :location, "Lokasi" %>
+        <%= form.search_field :location,
+                              value: params[:location],
+                              placeholder: "Kota atau tempat" %>
+      </div>
+      <div class="field">
+        <%= form.label :date, "Tanggal mulai" %>
+        <%= form.date_field :date, value: params[:date] %>
+      </div>
     </div>
 
-    <div>
-      <%= form.label :category, "Kategori" %>
-      <%= form.select :category,
-                      options_for_select(@categories, params[:category]),
-                      { include_blank: "Semua kategori" } %>
+    <div class="filter-actions">
+      <%= form.submit "Terapkan filter" %>
+      <%= link_to "Reset", volunteer_events_path, class: "button button--secondary" %>
     </div>
-
-    <div>
-      <%= form.label :location, "Lokasi" %>
-      <%= form.search_field :location,
-                            value: params[:location],
-                            placeholder: "Kota atau tempat" %>
-    </div>
-
-    <div>
-      <%= form.label :date, "Tanggal mulai" %>
-      <%= form.date_field :date, value: params[:date] %>
-    </div>
-
-    <%= form.submit "Terapkan filter" %>
-    <%= link_to "Reset filter", volunteer_events_path %>
   <% end %>
 
-  <p><%= @events.size %> kegiatan ditemukan.</p>
-
   <% if @events.any? %>
-    <% @events.each do |event| %>
-      <article>
-        <h3><%= link_to event.title, event %></h3>
-        <p><strong>Organisasi:</strong> <%= event.organization.name %></p>
-        <p><strong>Kategori:</strong> <%= event.category %></p>
-        <p><strong>Lokasi:</strong> <%= event.location %></p>
-        <p><strong>Mulai:</strong> <%= l event.starts_at, format: :long %></p>
-      </article>
-    <% end %>
+    <div class="event-grid">
+      <% @events.each do |event| %>
+        <article class="event-card card">
+          <div class="event-card__top">
+            <span class="badge"><%= event.category %></span>
+            <span class="text-muted"><%= event.capacity %> kapasitas</span>
+          </div>
+
+          <h3><%= link_to event.title, event %></h3>
+          <p class="text-muted"><%= truncate(event.description, length: 110) %></p>
+
+          <div class="event-card__meta">
+            <span><strong>Organisasi:</strong> <%= event.organization.name %></span>
+            <span><strong>Lokasi:</strong> <%= event.location %></span>
+            <span><strong>Mulai:</strong> <%= l event.starts_at, format: :long %></span>
+          </div>
+        </article>
+      <% end %>
+    </div>
   <% else %>
-    <p>Tidak ada kegiatan yang sesuai dengan filter.</p>
+    <div class="empty-state">
+      <h3>Tidak ada kegiatan ditemukan</h3>
+      <p>Coba ubah kata kunci atau reset filter pencarian Anda.</p>
+      <%= link_to "Reset filter", volunteer_events_path, class: "button button--secondary" %>
+    </div>
   <% end %>
 </section>

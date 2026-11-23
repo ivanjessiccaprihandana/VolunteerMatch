@@ -1,54 +1,71 @@
-<h1>Buat Akun VolunteerMatch</h1>
-
-<p>Daftar sebagai relawan atau organisasi penyelenggara.</p>
-
-<% if @user.errors.any? %>
-  <section>
-    <h2>Form belum dapat disimpan:</h2>
-
-    <ul>
-      <% @user.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
+<section class="auth-shell">
+  <div class="auth-intro">
+    <p class="eyebrow">Mulai berdampak</p>
+    <h2>Temukan cara terbaik untuk membantu sesama.</h2>
+    <p class="lead">
+      Satu tempat untuk menemukan kegiatan sosial, mengelola relawan,
+      dan membangun perubahan bersama.
+    </p>
+    <ul class="auth-benefits">
+      <li>Cari kegiatan sesuai minat dan lokasi</li>
+      <li>Kelola pendaftaran secara transparan</li>
+      <li>Pantau seluruh aktivitas dari satu dashboard</li>
     </ul>
-  </section>
-<% end %>
-
-<%= form_with model: @user do |form| %>
-  <div>
-    <%= form.label :name, "Nama lengkap" %>
-    <%= form.text_field :name, autocomplete: "name" %>
   </div>
 
-  <div>
-    <%= form.label :email, "Email" %>
-    <%= form.email_field :email, autocomplete: "email" %>
-  </div>
+  <div class="auth-card card">
+    <p class="eyebrow">Bergabung gratis</p>
+    <h1>Buat Akun VolunteerMatch</h1>
+    <p class="text-muted">Daftar sebagai relawan atau organisasi penyelenggara.</p>
 
-  <div>
-    <%= form.label :role, "Jenis akun" %>
-    <%= form.select :role,
-                    [["Relawan", "volunteer"], ["Organisasi", "organization"]] %>
-  </div>
+    <% if @user.errors.any? %>
+      <section class="error-summary">
+        <h2>Form belum dapat disimpan:</h2>
+        <ul>
+          <% @user.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </section>
+    <% end %>
 
-  <div>
-    <%= form.label :password, "Password" %>
-    <%= form.password_field :password, autocomplete: "new-password" %>
-    <small>Minimal 8 karakter.</small>
-  </div>
+    <%= form_with model: @user, class: "form-stack" do |form| %>
+      <div class="field">
+        <%= form.label :name, "Nama lengkap" %>
+        <%= form.text_field :name, autocomplete: "name", required: true %>
+      </div>
 
-  <div>
-    <%= form.label :password_confirmation, "Konfirmasi password" %>
-    <%= form.password_field :password_confirmation,
-                            autocomplete: "new-password" %>
-  </div>
+      <div class="field">
+        <%= form.label :email, "Email" %>
+        <%= form.email_field :email, autocomplete: "email", required: true %>
+      </div>
 
-  <div>
-    <%= form.submit "Buat akun" %>
-  </div>
-<% end %>
+      <div class="field">
+        <%= form.label :role, "Jenis akun" %>
+        <%= form.select :role,
+                        [["Relawan", "volunteer"], ["Organisasi", "organization"]] %>
+      </div>
 
-<p>
-  Sudah memiliki akun?
-  <%= link_to "Masuk", login_path %>
-</p>
+      <div class="field">
+        <%= form.label :password, "Password" %>
+        <%= form.password_field :password,
+                                autocomplete: "new-password",
+                                required: true %>
+        <small>Minimal 8 karakter.</small>
+      </div>
+
+      <div class="field">
+        <%= form.label :password_confirmation, "Konfirmasi password" %>
+        <%= form.password_field :password_confirmation,
+                                autocomplete: "new-password",
+                                required: true %>
+      </div>
+
+      <%= form.submit "Buat akun", class: "button--block" %>
+    <% end %>
+
+    <p class="form-footer">
+      Sudah memiliki akun? <%= link_to "Masuk", login_path %>
+    </p>
+  </div>
+</section>

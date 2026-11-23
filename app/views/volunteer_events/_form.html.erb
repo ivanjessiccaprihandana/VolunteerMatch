@@ -1,7 +1,6 @@
 <% if event.errors.any? %>
-  <section>
+  <section class="error-summary">
     <h2>Kegiatan belum dapat disimpan:</h2>
-
     <ul>
       <% event.errors.full_messages.each do |message| %>
         <li><%= message %></li>
@@ -10,52 +9,58 @@
   </section>
 <% end %>
 
-<%= form_with model: event do |form| %>
-  <div>
+<%= form_with model: event, class: "form-grid" do |form| %>
+  <div class="field field--full">
     <%= form.label :title, "Nama kegiatan" %>
-    <%= form.text_field :title, required: true %>
+    <%= form.text_field :title,
+                        required: true,
+                        placeholder: "Contoh: Bersih Pantai Bersama" %>
   </div>
 
-  <div>
+  <div class="field field--full">
     <%= form.label :description, "Deskripsi" %>
-    <%= form.text_area :description, required: true %>
+    <%= form.text_area :description,
+                       required: true,
+                       placeholder: "Jelaskan tujuan dan aktivitas kegiatan" %>
   </div>
 
-  <div>
+  <div class="field">
     <%= form.label :category, "Kategori" %>
-    <%= form.text_field :category, required: true, placeholder: "Contoh: Lingkungan" %>
+    <%= form.text_field :category, required: true, placeholder: "Lingkungan" %>
   </div>
 
-  <div>
+  <div class="field">
     <%= form.label :location, "Lokasi" %>
-    <%= form.text_field :location, required: true %>
+    <%= form.text_field :location, required: true, placeholder: "Jakarta" %>
   </div>
 
-  <div>
+  <div class="field">
     <%= form.label :starts_at, "Waktu mulai" %>
     <%= form.datetime_local_field :starts_at, required: true %>
   </div>
 
-  <div>
+  <div class="field">
     <%= form.label :ends_at, "Waktu selesai" %>
     <%= form.datetime_local_field :ends_at, required: true %>
   </div>
 
-  <div>
+  <div class="field">
     <%= form.label :registration_deadline, "Batas pendaftaran" %>
     <%= form.datetime_local_field :registration_deadline, required: true %>
   </div>
 
-  <div>
+  <div class="field">
     <%= form.label :capacity, "Kapasitas relawan" %>
     <%= form.number_field :capacity, min: 1, required: true %>
   </div>
 
-  <div>
-    <%= form.label :status, "Status" %>
+  <div class="field field--full">
+    <%= form.label :status, "Status publikasi" %>
     <%= form.select :status,
                     VolunteerEvent.statuses.keys.map { |status| [status.humanize, status] } %>
   </div>
 
-  <%= form.submit event.persisted? ? "Simpan perubahan" : "Buat kegiatan" %>
+  <div class="field field--full">
+    <%= form.submit event.persisted? ? "Simpan perubahan" : "Buat kegiatan" %>
+  </div>
 <% end %>
