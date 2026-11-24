@@ -13,8 +13,10 @@ Rails.application.configure do
   config.consider_all_requests_local = false
   config.action_controller.perform_caching = true
 
-  # Fail fast on boot when the master key (or SECRET_KEY_BASE) is missing.
-  config.require_master_key = ENV["SECRET_KEY_BASE"].blank?
+  # Fail fast on boot when neither SECRET_KEY_BASE nor the master key is set.
+  # Skipped while building the Docker image (SECRET_KEY_BASE_DUMMY), which
+  # deliberately has no secrets in it.
+  config.require_master_key = ENV["SECRET_KEY_BASE"].blank? && ENV["SECRET_KEY_BASE_DUMMY"].blank?
 
   # Serve precompiled assets from /public. Inside Docker there is no NGINX in
   # front of Puma, so this is on unless explicitly disabled.
