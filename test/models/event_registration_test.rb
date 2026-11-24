@@ -80,15 +80,6 @@ class EventRegistrationTest < ActiveSupport::TestCase
     )
   end
 
-  def create_user(name:, email:, role:)
-    User.create!(
-      name: name,
-      email: email,
-      password: "password123",
-      password_confirmation: "password123",
-      role: role
-    )
-  end
 
   def event_attributes
     {

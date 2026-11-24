@@ -1,0 +1,10 @@
+Halo <%= @volunteer.name %>,
+
+<% if @registration.accepted? -%>
+Selamat! Pendaftaran Anda untuk "<%= @event.title %>" telah DITERIMA.
+Kegiatan dimulai <%= l @event.starts_at, format: :long %> di <%= @event.location %>.
+<% else -%>
+Mohon maaf, pendaftaran Anda untuk "<%= @event.title %>" belum dapat diterima kali ini.
+<% end -%>
+
+Lihat kegiatan: <%= @event_url %>

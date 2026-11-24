@@ -1,0 +1,4 @@
+<p>Halo <%= @event.organization.name %>,</p>
+<p><strong><%= @volunteer.name %></strong> membatalkan pendaftaran pada kegiatan <strong><%= @event.title %></strong>.</p>
+<p>Sisa slot sekarang: <%= @event.remaining_capacity %> relawan.</p>
+<p><a href="<%= @event_url %>" style="display:inline-block;background:#13795b;color:#ffffff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:bold;">Lihat kegiatan</a></p>

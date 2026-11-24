@@ -1,0 +1,9 @@
+<p>Halo <%= @volunteer.name %>,</p>
+<% if @registration.accepted? %>
+  <p>Selamat! Pendaftaran Anda untuk <strong><%= @event.title %></strong> telah <strong>diterima</strong>.</p>
+  <p>Kegiatan dimulai <%= l @event.starts_at, format: :long %> di <%= @event.location %>. Penyelenggara dapat menghubungi Anda melalui email ini.</p>
+<% else %>
+  <p>Mohon maaf, pendaftaran Anda untuk <strong><%= @event.title %></strong> belum dapat diterima kali ini.</p>
+  <p>Masih banyak kegiatan lain yang membutuhkan bantuan Anda.</p>
+<% end %>
+<p><a href="<%= @event_url %>" style="display:inline-block;background:#13795b;color:#ffffff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:bold;">Lihat kegiatan</a></p>

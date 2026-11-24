@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_11_18_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_24_100002) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "pg_catalog.plpgsql"
 
   create_table "event_registrations", force: :cascade do |t|
     t.bigint "volunteer_id", null: false
@@ -21,7 +21,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_11_18_100000) do
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["volunteer_event_id", "volunteer_id"], name: "index_event_registrations_on_event_and_volunteer", unique: true
+    t.index ["volunteer_event_id", "volunteer_id"], name: "index_event_registrations_on_active_event_and_volunteer", unique: true, where: "(status <> 3)"
     t.index ["volunteer_event_id"], name: "index_event_registrations_on_volunteer_event_id"
     t.index ["volunteer_id"], name: "index_event_registrations_on_volunteer_id"
   end
@@ -46,6 +46,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_11_18_100000) do
     t.integer "role", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "email_confirmed_at"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
@@ -62,6 +63,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_11_18_100000) do
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_volunteer_events_on_category"
     t.index ["organization_id"], name: "index_volunteer_events_on_organization_id"
     t.index ["status", "starts_at"], name: "index_volunteer_events_on_status_and_starts_at"
   end

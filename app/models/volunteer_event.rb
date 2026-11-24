@@ -1,16 +1,21 @@
 class VolunteerEvent < ApplicationRecord
+  CATEGORIES = %w[Lingkungan Pendidikan Kesehatan Sosial Bencana Hewan Lainnya].freeze
+  PER_PAGE = 12
+
   belongs_to :organization, class_name: "User", inverse_of: :volunteer_events
   has_many :event_registrations, dependent: :destroy
   has_many :registered_volunteers,
            through: :event_registrations,
            source: :volunteer
 
-  enum status: {
+  enum :status, {
     draft: 0,
     published: 1,
     closed: 2,
     cancelled: 3
   }
+
+  normalizes :title, :location, with: ->(value) { value.to_s.squish }
 
   scope :upcoming, -> {
     published.where("starts_at >= ?", Time.current).order(:starts_at)
@@ -41,20 +46,35 @@ class VolunteerEvent < ApplicationRecord
     date.present? ? where(starts_at: date.all_day) : all
   end
 
-  validates :title, presence: true
-  validates :description, presence: true
-  validates :category, presence: true
-  validates :location, presence: true
+  def self.page(number)
+    number = number.to_i.clamp(1, 10_000)
+    limit(PER_PAGE).offset((number - 1) * PER_PAGE)
+  end
+
+  validates :title, presence: true, length: { maximum: 150 }
+  validates :description, presence: true, length: { maximum: 10_000 }
+  validates :category, presence: true, inclusion: { in: CATEGORIES }
+  validates :location, presence: true, length: { maximum: 255 }
   validates :starts_at, presence: true
   validates :ends_at, presence: true
   validates :registration_deadline, presence: true
   validates :status, presence: true
   validates :capacity,
-            numericality: { only_integer: true, greater_than: 0 }
+            numericality: {
+              only_integer: true,
+              greater_than: 0,
+              less_than_or_equal_to: 10_000
+            }
 
   validate :organization_account_required
+  validate :organization_verified_to_publish
+  validate :starts_in_future, if: -> { new_record? || will_save_change_to_starts_at? }
   validate :ends_after_start
   validate :registration_closes_before_start
+  validate :capacity_covers_accepted_volunteers, if: -> { persisted? && will_save_change_to_capacity? }
+
+  after_update_commit :notify_volunteers_of_cancellation,
+                      if: -> { saved_change_to_status?(to: "cancelled") }
 
   def registration_open?
     published? &&
@@ -63,11 +83,25 @@ class VolunteerEvent < ApplicationRecord
       starts_at.present? &&
       starts_at.future? &&
       capacity.present? &&
-      event_registrations.accepted.count < capacity
+      accepted_count < capacity
   end
 
   def remaining_capacity
-    [capacity - event_registrations.accepted.count, 0].max
+    [capacity - accepted_count, 0].max
+  end
+
+  def accepted_count
+    event_registrations.accepted.count
+  end
+
+  def started?
+    starts_at.present? && starts_at <= Time.current
+  end
+
+  # Events that real volunteers signed up for are cancelled instead of
+  # deleted, so everyone keeps a record and gets notified.
+  def deletable?
+    event_registrations.none?
   end
 
   private
@@ -75,20 +109,45 @@ class VolunteerEvent < ApplicationRecord
   def organization_account_required
     return if organization.nil? || organization.organization?
 
-    errors.add(:organization, "must use an organization account")
+    errors.add(:organization, :must_be_organization)
+  end
+
+  def organization_verified_to_publish
+    return unless published? && will_save_change_to_status?
+    return if organization.nil? || organization.verified_organization?
+
+    errors.add(:status, :organization_not_verified)
+  end
+
+  def starts_in_future
+    return if starts_at.blank? || starts_at.future?
+
+    errors.add(:starts_at, :must_be_in_future)
   end
 
   def ends_after_start
     return if starts_at.blank? || ends_at.blank?
     return if ends_at > starts_at
 
-    errors.add(:ends_at, "must be after the start time")
+    errors.add(:ends_at, :must_be_after_start)
   end
 
   def registration_closes_before_start
     return if registration_deadline.blank? || starts_at.blank?
     return if registration_deadline < starts_at
 
-    errors.add(:registration_deadline, "must be before the start time")
+    errors.add(:registration_deadline, :must_be_before_start)
+  end
+
+  def capacity_covers_accepted_volunteers
+    return if capacity.blank? || capacity >= accepted_count
+
+    errors.add(:capacity, :below_accepted, count: accepted_count)
+  end
+
+  def notify_volunteers_of_cancellation
+    event_registrations.active.includes(:volunteer).find_each do |registration|
+      RegistrationMailer.with(registration: registration).event_cancelled.deliver_later
+    end
   end
 end
