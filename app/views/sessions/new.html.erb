@@ -1,3 +1,5 @@
+<% content_for :title, "Masuk" %>
+
 <section class="auth-shell">
   <div class="auth-intro">
     <p class="eyebrow">Selamat datang kembali</p>
@@ -33,6 +35,12 @@
 
       <%= form.submit "Masuk", class: "button--block" %>
     <% end %>
+
+    <p class="form-footer">
+      <%= link_to "Lupa password?", new_password_reset_path %>
+      ·
+      <%= link_to "Kirim ulang email konfirmasi", new_email_confirmation_path %>
+    </p>
 
     <p class="form-footer">
       Belum memiliki akun? <%= link_to "Daftar sekarang", new_user_path %>

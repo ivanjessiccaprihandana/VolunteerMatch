@@ -10,24 +10,27 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "creates a volunteer with valid data" do
-    assert_difference("User.count", 1) do
-      post users_url, params: {
-        user: {
-          name: "Relawan Test",
-          email: " NEW@EXAMPLE.COM ",
-          password: "password123",
-          password_confirmation: "password123"
+    assert_enqueued_emails 1 do
+      assert_difference("User.count", 1) do
+        post users_url, params: {
+          user: {
+            name: "Relawan Test",
+            email: " NEW@EXAMPLE.COM ",
+            password: "password123",
+            password_confirmation: "password123"
+          }
         }
-      }
+      end
     end
 
     user = User.order(:created_at).last
 
     assert_redirected_to login_url
-    assert_equal "Akun berhasil dibuat. Silakan masuk.", flash[:notice]
+    assert_match "tautan konfirmasi", flash[:notice]
     assert_equal "new@example.com", user.email
     assert user.volunteer?
     assert user.authenticate("password123")
+    assert_not user.email_confirmed?
   end
 
   test "creates an organization account" do

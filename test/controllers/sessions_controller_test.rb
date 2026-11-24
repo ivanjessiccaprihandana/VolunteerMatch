@@ -6,7 +6,8 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
       name: "Session Test",
       email: "session@example.com",
       password: "password123",
-      password_confirmation: "password123"
+      password_confirmation: "password123",
+      email_confirmed_at: Time.current
     )
   end
 

@@ -1,0 +1,20 @@
+<% content_for :title, "Lupa password" %>
+
+<section class="auth-card auth-card--narrow card">
+  <p class="eyebrow">Akses akun</p>
+  <h1>Lupa password</h1>
+  <p class="text-muted">
+    Masukkan email akun Anda. Kami akan mengirim tautan untuk membuat password baru.
+  </p>
+
+  <%= form_with url: password_reset_path, method: :post, class: "form-stack" do |form| %>
+    <div class="field">
+      <%= form.label :email, "Email" %>
+      <%= form.email_field :email, autocomplete: "email", required: true, value: params[:email] %>
+    </div>
+
+    <%= form.submit "Kirim tautan", class: "button--block" %>
+  <% end %>
+
+  <p class="form-footer"><%= link_to "← Kembali ke halaman masuk", login_path %></p>
+</section>
