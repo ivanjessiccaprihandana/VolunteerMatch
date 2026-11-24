@@ -1,0 +1,21 @@
+<% content_for :title, "Konfirmasi email" %>
+
+<section class="auth-card auth-card--narrow card">
+  <p class="eyebrow">Konfirmasi email</p>
+  <h1>Kirim ulang tautan konfirmasi</h1>
+  <p class="text-muted">
+    Akun harus dikonfirmasi sebelum bisa dipakai. Tidak menerima email? Cek folder spam,
+    atau kirim ulang tautan di bawah ini.
+  </p>
+
+  <%= form_with url: new_email_confirmation_path, method: :post, class: "form-stack" do |form| %>
+    <div class="field">
+      <%= form.label :email, "Email" %>
+      <%= form.email_field :email, autocomplete: "email", required: true, value: params[:email] %>
+    </div>
+
+    <%= form.submit "Kirim ulang", class: "button--block" %>
+  <% end %>
+
+  <p class="form-footer"><%= link_to "← Kembali ke halaman masuk", login_path %></p>
+</section>

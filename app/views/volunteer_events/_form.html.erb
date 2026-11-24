@@ -26,7 +26,10 @@
 
   <div class="field">
     <%= form.label :category, "Kategori" %>
-    <%= form.text_field :category, required: true, placeholder: "Lingkungan" %>
+    <%= form.select :category,
+                    VolunteerEvent::CATEGORIES,
+                    { include_blank: "Pilih kategori" },
+                    required: true %>
   </div>
 
   <div class="field">
@@ -57,7 +60,13 @@
   <div class="field field--full">
     <%= form.label :status, "Status publikasi" %>
     <%= form.select :status,
-                    VolunteerEvent.statuses.keys.map { |status| [status.humanize, status] } %>
+                    status_options_for(VolunteerEvent) %>
+    <% unless current_user.verified_organization? %>
+      <small>Organisasi Anda belum diverifikasi, jadi kegiatan hanya bisa disimpan sebagai draf.</small>
+    <% end %>
+    <% if event.persisted? && !event.cancelled? && event.event_registrations.active.exists? %>
+      <small>Mengubah status menjadi <strong>Dibatalkan</strong> akan mengirim email pemberitahuan ke semua relawan yang terdaftar.</small>
+    <% end %>
   </div>
 
   <div class="field field--full">

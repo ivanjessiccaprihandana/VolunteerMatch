@@ -1,0 +1,9 @@
+#!/bin/bash -e
+
+# Run pending migrations before starting the web server. db:prepare also
+# creates the database on the very first boot.
+if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
+  ./bin/rails db:prepare
+fi
+
+exec "${@}"

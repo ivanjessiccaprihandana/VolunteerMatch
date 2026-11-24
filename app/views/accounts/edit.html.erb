@@ -1,0 +1,36 @@
+<% content_for :title, "Hapus akun" %>
+
+<section class="auth-card auth-card--narrow card">
+  <p class="eyebrow">Privasi</p>
+  <h1>Hapus akun</h1>
+  <p class="text-muted">Tindakan ini permanen dan tidak bisa dibatalkan. Yang akan dihapus:</p>
+  <ul class="text-muted">
+    <li>akun dan profil Anda;</li>
+    <% if current_user.organization? %>
+      <li>semua kegiatan yang Anda buat beserta data pendaftarnya.</li>
+    <% else %>
+      <li>seluruh riwayat pendaftaran kegiatan Anda.</li>
+    <% end %>
+  </ul>
+
+  <% unless current_user.deletable? %>
+    <p class="flash flash--alert">
+      Anda masih memiliki kegiatan mendatang dengan relawan aktif. Ubah statusnya menjadi
+      <strong>Dibatalkan</strong> terlebih dahulu agar relawan diberi tahu.
+    </p>
+  <% end %>
+
+  <%= form_with url: account_path,
+                method: :delete,
+                class: "form-stack",
+                data: { turbo_confirm: "Yakin ingin menghapus akun secara permanen?" } do |form| %>
+    <div class="field">
+      <%= form.label :password, "Masukkan password untuk konfirmasi" %>
+      <%= form.password_field :password, autocomplete: "current-password", required: true %>
+    </div>
+
+    <%= form.submit "Hapus akun permanen", class: "button--block button--danger" %>
+  <% end %>
+
+  <p class="form-footer"><%= link_to "← Batal", profile_path %></p>
+</section>

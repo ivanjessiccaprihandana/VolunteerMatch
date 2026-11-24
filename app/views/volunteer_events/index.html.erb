@@ -12,6 +12,8 @@
   <% end %>
 </header>
 
+<% content_for :title, "Kegiatan Relawan" %>
+
 <% if logged_in? && current_user.organization? %>
   <section class="panel">
     <p class="eyebrow">Workspace organisasi</p>
@@ -25,9 +27,7 @@
               <%= link_to event.title, event %>
               <div class="text-muted"><%= l event.starts_at, format: :long %></div>
             </div>
-            <span class="badge badge--<%= event.status %>">
-              <%= event.status.humanize %>
-            </span>
+            <%= status_badge(event) %>
           </li>
         <% end %>
       </ul>
@@ -47,7 +47,7 @@
       <p class="eyebrow">Jelajahi</p>
       <h2>Kegiatan yang akan datang</h2>
     </div>
-    <p class="results-count"><%= @events.size %> kegiatan ditemukan</p>
+    <p class="results-count"><%= @total_count %> kegiatan ditemukan</p>
   </div>
 
   <%= form_with url: volunteer_events_path,
@@ -104,6 +104,24 @@
         </article>
       <% end %>
     </div>
+
+    <% if @total_pages > 1 %>
+      <nav class="pagination" aria-label="Halaman kegiatan">
+        <% if @page > 1 %>
+          <%= link_to "← Sebelumnya",
+                      volunteer_events_path(request.query_parameters.merge(page: @page - 1)),
+                      class: "button button--secondary",
+                      rel: "prev" %>
+        <% end %>
+        <span class="text-muted">Halaman <%= @page %> dari <%= @total_pages %></span>
+        <% if @page < @total_pages %>
+          <%= link_to "Berikutnya →",
+                      volunteer_events_path(request.query_parameters.merge(page: @page + 1)),
+                      class: "button button--secondary",
+                      rel: "next" %>
+        <% end %>
+      </nav>
+    <% end %>
   <% else %>
     <div class="empty-state">
       <h3>Tidak ada kegiatan ditemukan</h3>

@@ -128,6 +128,12 @@ class EventRegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "h2", "Daftar Pendaftar"
     assert_select "h3", registration.volunteer.name
+    # Contact details stay hidden until the organizer accepts the volunteer.
+    assert_select "p", text: /#{registration.volunteer.email}/, count: 0
+
+    registration.update!(status: :accepted)
+    get volunteer_event_url(@event)
+
     assert_select "p", text: /#{registration.volunteer.email}/
   end
 
@@ -141,7 +147,7 @@ class EventRegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "h2", "Pendaftaran Saya"
     assert_select "a[href=?]", volunteer_event_path(@event), text: @event.title
-    assert_select "li", text: /Accepted/
+    assert_select "li", text: /Diterima/
   end
 
   private
@@ -153,15 +159,6 @@ class EventRegistrationsControllerTest < ActionDispatch::IntegrationTest
     )
   end
 
-  def create_user(name:, email:, role:)
-    User.create!(
-      name: name,
-      email: email,
-      password: "password123",
-      password_confirmation: "password123",
-      role: role
-    )
-  end
 
   def event_attributes
     {
@@ -177,12 +174,4 @@ class EventRegistrationsControllerTest < ActionDispatch::IntegrationTest
     }
   end
 
-  def login_as(user)
-    post login_url, params: {
-      session: {
-        email: user.email,
-        password: "password123"
-      }
-    }
-  end
 end

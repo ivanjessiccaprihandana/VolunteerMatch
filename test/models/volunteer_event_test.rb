@@ -9,6 +9,7 @@ class VolunteerEventTest < ActiveSupport::TestCase
       password_confirmation: "password123",
       role: :organization
     )
+    @organization.create_organization_profile!(organization_name: "Pengelola", verified: true)
 
     @attributes = {
       organization: @organization,
@@ -41,7 +42,7 @@ class VolunteerEventTest < ActiveSupport::TestCase
     event = VolunteerEvent.new(@attributes.merge(organization: volunteer))
 
     assert_not event.valid?
-    assert_includes event.errors[:organization], "must use an organization account"
+    assert event.errors.of_kind?(:organization, :must_be_organization)
   end
 
   test "requires valid dates and capacity" do

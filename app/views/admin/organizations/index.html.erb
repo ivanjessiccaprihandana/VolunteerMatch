@@ -1,0 +1,72 @@
+<% content_for :title, "Verifikasi organisasi" %>
+
+<header class="page-header">
+  <div class="page-header__copy">
+    <p class="eyebrow">Admin</p>
+    <h1>Verifikasi organisasi</h1>
+    <p class="lead">
+      Hanya organisasi terverifikasi yang dapat mempublikasikan kegiatan. Periksa nama,
+      website, dan kontak sebelum memverifikasi.
+    </p>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Filter organisasi">
+  <% { "pending" => "Menunggu verifikasi", "verified" => "Terverifikasi", "all" => "Semua" }.each do |key, label| %>
+    <%= link_to label,
+                admin_organizations_path(filter: key),
+                class: "button #{'button--secondary' unless @filter == key}",
+                aria: { current: (@filter == key ? "page" : nil) } %>
+  <% end %>
+</nav>
+
+<% if @organizations.any? %>
+  <ul class="list-clean">
+    <% @organizations.each do |organization| %>
+      <% profile = organization.organization_profile %>
+      <li class="list-item list-item--stacked">
+        <div>
+          <h3><%= profile&.organization_name.presence || organization.name %></h3>
+          <p class="text-muted">
+            Akun: <%= organization.name %> · <%= mail_to organization.email %>
+            · daftar <%= l organization.created_at.to_date, format: :long %>
+            <% unless organization.email_confirmed? %>· <strong>email belum dikonfirmasi</strong><% end %>
+          </p>
+          <% if profile %>
+            <p class="text-muted">
+              <%= [profile.city, profile.phone].compact_blank.join(" · ").presence || "Kota dan telepon belum diisi" %>
+              <% if profile.website.present? %>
+                · <%= link_to profile.website, profile.website, rel: "noopener nofollow", target: "_blank" %>
+              <% end %>
+            </p>
+            <% if profile.description.present? %>
+              <p><%= truncate(profile.description, length: 240) %></p>
+            <% end %>
+          <% else %>
+            <p class="text-muted">Profil organisasi belum dilengkapi.</p>
+          <% end %>
+        </div>
+
+        <div class="actions">
+          <% if profile&.verified? %>
+            <span class="badge">✓ Terverifikasi</span>
+            <%= button_to "Cabut verifikasi",
+                          admin_organization_path(organization, verified: false, filter: @filter),
+                          method: :patch,
+                          class: "button--danger",
+                          form: { data: { turbo_confirm: "Cabut verifikasi organisasi ini?" } } %>
+          <% elsif profile %>
+            <%= button_to "Verifikasi",
+                          admin_organization_path(organization, verified: true, filter: @filter),
+                          method: :patch %>
+          <% end %>
+        </div>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <div class="empty-state">
+    <h3>Tidak ada organisasi</h3>
+    <p>Tidak ada organisasi pada filter ini.</p>
+  </div>
+<% end %>

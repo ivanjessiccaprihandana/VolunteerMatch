@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
   <head>
-    <title>VolunteerMatch</title>
+    <title><%= content_for?(:title) ? "#{yield(:title)} · VolunteerMatch" : "VolunteerMatch — Temukan kegiatan relawan" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="VolunteerMatch mempertemukan relawan dengan organisasi penyelenggara kegiatan sosial di Indonesia.">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -22,8 +23,13 @@
           <%= link_to "Kegiatan", volunteer_events_path, class: "nav-link" %>
 
           <% if logged_in? %>
+            <% if current_user.admin? %>
+              <%= link_to "Admin", admin_root_path, class: "nav-link" %>
+            <% end %>
             <%= link_to "Dashboard", dashboard_path, class: "nav-link" %>
-            <%= link_to "Profil", profile_path, class: "nav-link" %>
+            <% unless current_user.admin? %>
+              <%= link_to "Profil", profile_path, class: "nav-link" %>
+            <% end %>
             <%= button_to "Keluar",
                           logout_path,
                           method: :delete,
@@ -44,13 +50,25 @@
         </p>
       <% end %>
 
+      <% if logged_in? && current_user.organization? && !current_user.verified_organization? %>
+        <p class="notice-banner" role="status">
+          Organisasi Anda belum diverifikasi. Anda tetap bisa membuat kegiatan sebagai draf;
+          kegiatan dapat dipublikasikan setelah admin memverifikasi
+          <%= link_to "profil organisasi", profile_path %> Anda.
+        </p>
+      <% end %>
+
       <%= yield %>
     </main>
 
     <footer class="site-footer">
       <div class="site-footer__inner container">
         <span>VolunteerMatch — menghubungkan aksi baik dengan orang yang tepat.</span>
-        <span>&copy; <%= Time.current.year %> VolunteerMatch</span>
+        <span class="footer-links">
+          <%= link_to "Kebijakan Privasi", privacy_path %>
+          <%= link_to "Syarat Penggunaan", terms_path %>
+          <span>&copy; <%= Time.current.year %> VolunteerMatch</span>
+        </span>
       </div>
     </footer>
   </body>

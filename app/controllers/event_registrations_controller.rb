@@ -13,9 +13,11 @@ class EventRegistrationsController < ApplicationController
     if registration.save
       redirect_to @event, notice: "Pendaftaran berhasil dikirim."
     else
-      redirect_to @event,
-                  alert: registration.errors.full_messages.to_sentence
+      redirect_to @event, alert: registration.errors.full_messages.to_sentence
     end
+  rescue ActiveRecord::RecordNotUnique
+    # Two submits raced past the validation; the unique index caught it.
+    redirect_to @event, alert: "Anda sudah terdaftar pada kegiatan ini."
   end
 
   def accept
@@ -27,7 +29,7 @@ class EventRegistrationsController < ApplicationController
   end
 
   def cancel
-    unless @registration.pending? || @registration.accepted?
+    unless @registration.cancellable?
       redirect_to @event, alert: "Pendaftaran ini tidak dapat dibatalkan."
       return
     end
@@ -71,11 +73,10 @@ class EventRegistrationsController < ApplicationController
   end
 
   def update_status(status, success_message)
-    if @registration.update(status: status)
+    if @registration.transition_to(status)
       redirect_to @event, notice: success_message
     else
-      redirect_to @event,
-                  alert: @registration.errors.full_messages.to_sentence
+      redirect_to @event, alert: @registration.errors.full_messages.to_sentence
     end
   end
 end

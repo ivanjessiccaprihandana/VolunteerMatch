@@ -6,7 +6,8 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
       name: "Relawan Profil",
       email: "profile-volunteer@example.com",
       password: "password123",
-      password_confirmation: "password123"
+      password_confirmation: "password123",
+      email_confirmed_at: Time.current
     )
 
     @organization = User.create!(
@@ -14,6 +15,7 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
       email: "profile-organization@example.com",
       password: "password123",
       password_confirmation: "password123",
+      email_confirmed_at: Time.current,
       role: :organization
     )
   end
@@ -88,12 +90,4 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-  def login_as(user)
-    post login_url, params: {
-      session: {
-        email: user.email,
-        password: "password123"
-      }
-    }
-  end
 end

@@ -150,15 +150,6 @@ class VolunteerEventsControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-  def create_user(name:, email:, role:)
-    User.create!(
-      name: name,
-      email: email,
-      password: "password123",
-      password_confirmation: "password123",
-      role: role
-    )
-  end
 
   def create_event(overrides = {})
     @organization.volunteer_events.create!(event_attributes.merge(overrides))
@@ -178,12 +169,4 @@ class VolunteerEventsControllerTest < ActionDispatch::IntegrationTest
     }
   end
 
-  def login_as(user)
-    post login_url, params: {
-      session: {
-        email: user.email,
-        password: "password123"
-      }
-    }
-  end
 end

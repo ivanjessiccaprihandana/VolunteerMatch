@@ -1,0 +1,36 @@
+<% content_for :title, "Password baru" %>
+
+<section class="auth-card auth-card--narrow card">
+  <p class="eyebrow">Akses akun</p>
+  <h1>Buat password baru</h1>
+  <p class="text-muted">Untuk akun <strong><%= @user.email %></strong>.</p>
+
+  <% if @user.errors.any? %>
+    <section class="error-summary">
+      <h2>Password belum dapat disimpan:</h2>
+      <ul>
+        <% @user.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <%= form_with model: @user,
+                url: password_reset_path(token: @token),
+                method: :patch,
+                class: "form-stack" do |form| %>
+    <div class="field">
+      <%= form.label :password, "Password baru" %>
+      <%= form.password_field :password, autocomplete: "new-password", required: true, minlength: 8 %>
+      <small>Minimal 8 karakter.</small>
+    </div>
+
+    <div class="field">
+      <%= form.label :password_confirmation, "Konfirmasi password baru" %>
+      <%= form.password_field :password_confirmation, autocomplete: "new-password", required: true %>
+    </div>
+
+    <%= form.submit "Simpan password", class: "button--block" %>
+  <% end %>
+</section>

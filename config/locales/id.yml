@@ -1,0 +1,92 @@
+# Indonesian copy for models. Generic messages, dates, and numbers come from
+# the rails-i18n gem.
+id:
+  activerecord:
+    models:
+      user: Pengguna
+      volunteer_event: Kegiatan
+      event_registration: Pendaftaran
+      volunteer_profile: Profil relawan
+      organization_profile: Profil organisasi
+    attributes:
+      user:
+        name: Nama
+        email: Email
+        password: Password
+        password_confirmation: Konfirmasi password
+        role: Jenis akun
+      volunteer_event:
+        organization: Organisasi
+        title: Nama kegiatan
+        description: Deskripsi
+        category: Kategori
+        location: Lokasi
+        starts_at: Waktu mulai
+        ends_at: Waktu selesai
+        registration_deadline: Batas pendaftaran
+        capacity: Kapasitas
+        status: Status
+      event_registration:
+        volunteer: Relawan
+        volunteer_id: Relawan
+        volunteer_event: Kegiatan
+        motivation: Motivasi
+        status: Status
+      volunteer_profile:
+        phone: Nomor telepon
+        city: Kota
+        bio: Bio
+        skills: Keahlian
+        availability: Ketersediaan
+      organization_profile:
+        organization_name: Nama organisasi
+        phone: Nomor telepon
+        city: Kota
+        description: Deskripsi
+        website: Website
+    enums:
+      user:
+        role:
+          volunteer: Relawan
+          organization: Organisasi
+          admin: Admin
+      volunteer_event:
+        status:
+          draft: Draf
+          published: Dipublikasikan
+          closed: Ditutup
+          cancelled: Dibatalkan
+      event_registration:
+        status:
+          pending: Menunggu
+          accepted: Diterima
+          rejected: Ditolak
+          cancelled: Dibatalkan
+    errors:
+      models:
+        volunteer_event:
+          attributes:
+            organization:
+              must_be_organization: harus menggunakan akun organisasi
+            status:
+              organization_not_verified: >-
+                tidak dapat dipublikasikan sebelum organisasi Anda diverifikasi admin.
+                Simpan sebagai draf terlebih dahulu
+            starts_at:
+              must_be_in_future: harus di masa mendatang
+            ends_at:
+              must_be_after_start: harus setelah waktu mulai
+            registration_deadline:
+              must_be_before_start: harus sebelum waktu mulai
+            capacity:
+              below_accepted: tidak boleh lebih kecil dari jumlah relawan yang sudah diterima (%{count})
+        event_registration:
+          attributes:
+            volunteer:
+              must_be_volunteer: harus menggunakan akun relawan
+            volunteer_id:
+              already_registered: sudah terdaftar pada kegiatan ini
+            volunteer_event:
+              not_accepting_registrations: tidak menerima pendaftaran
+            status:
+              capacity_full: tidak dapat diterima karena kapasitas sudah penuh

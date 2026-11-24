@@ -15,7 +15,7 @@ class OrganizationProfileTest < ActiveSupport::TestCase
     profile = OrganizationProfile.new(user: @user)
 
     assert_not profile.valid?
-    assert_includes profile.errors[:organization_name], "can't be blank"
+    assert profile.errors.of_kind?(:organization_name, :blank)
   end
 
   test "is unverified by default" do

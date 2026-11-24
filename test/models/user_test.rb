@@ -34,7 +34,7 @@ class UserTest < ActiveSupport::TestCase
     )
 
     assert_not duplicate.valid?
-    assert_includes duplicate.errors[:email], "has already been taken"
+    assert duplicate.errors.of_kind?(:email, :taken)
   end
 
   test "defaults role to volunteer" do

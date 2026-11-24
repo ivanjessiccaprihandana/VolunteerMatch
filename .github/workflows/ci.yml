@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Scan code for security issues
+        run: bundle exec brakeman --no-pager --quiet
+      - name: Check gems for known vulnerabilities
+        run: bundle exec bundler-audit check --update
+
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      RAILS_ENV: test
+      CI: "true"
+      VOLUNTEERMATCH_DATABASE_PASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Prepare database
+        run: bin/rails db:create db:schema:load
+      - name: Run tests
+        run: bin/rails test:all
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [security, test]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build production image
+        run: docker build -t volunteermatch:ci .
