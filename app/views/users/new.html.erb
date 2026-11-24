@@ -1,3 +1,5 @@
+<% content_for :title, "Daftar" %>
+
 <section class="auth-shell">
   <div class="auth-intro">
     <p class="eyebrow">Mulai berdampak</p>
@@ -60,6 +62,12 @@
                                 autocomplete: "new-password",
                                 required: true %>
       </div>
+
+      <p class="text-muted form-note">
+        Dengan membuat akun, Anda menyetujui
+        <%= link_to "Syarat Penggunaan", terms_path %> dan
+        <%= link_to "Kebijakan Privasi", privacy_path %>.
+      </p>
 
       <%= form.submit "Buat akun", class: "button--block" %>
     <% end %>

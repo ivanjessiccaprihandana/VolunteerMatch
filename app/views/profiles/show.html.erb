@@ -1,3 +1,5 @@
+<% content_for :title, "Profil" %>
+
 <header class="page-header">
   <div class="page-header__copy">
     <p class="eyebrow">Identitas akun</p>
@@ -25,7 +27,7 @@
       <div><dt>Nama organisasi</dt><dd><%= @profile.organization_name.presence || "Belum diisi" %></dd></div>
       <div><dt>Kota</dt><dd><%= @profile.city.presence || "Belum diisi" %></dd></div>
       <div><dt>Telepon</dt><dd><%= @profile.phone.presence || "Belum diisi" %></dd></div>
-      <div><dt>Website</dt><dd><%= @profile.website.presence || "Belum diisi" %></dd></div>
+      <div><dt>Website</dt><dd><%= @profile.website.present? ? link_to(@profile.website, @profile.website, rel: "noopener nofollow", target: "_blank") : "Belum diisi" %></dd></div>
       <div><dt>Deskripsi</dt><dd><%= @profile.description.presence || "Belum diisi" %></dd></div>
       <div>
         <dt>Status verifikasi</dt>
@@ -37,4 +39,11 @@
       </div>
     </dl>
   <% end %>
+</section>
+
+<section class="panel panel--danger">
+  <p class="eyebrow">Privasi</p>
+  <h2>Hapus akun</h2>
+  <p class="text-muted">Hapus akun beserta profil dan riwayat pendaftaran Anda secara permanen.</p>
+  <%= link_to "Hapus akun saya", edit_account_path, class: "button button--danger" %>
 </section>

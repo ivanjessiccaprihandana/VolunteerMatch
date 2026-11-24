@@ -1,0 +1,48 @@
+<% content_for :title, "Kebijakan Privasi" %>
+
+<article class="panel prose">
+  <p class="eyebrow">Dokumen</p>
+  <h1>Kebijakan Privasi</h1>
+  <p class="text-muted">Berlaku sejak 24 November 2026.</p>
+
+  <h2>Data yang kami kumpulkan</h2>
+  <ul>
+    <li><strong>Akun:</strong> nama, email, dan password (disimpan dalam bentuk hash, tidak dapat dibaca).</li>
+    <li><strong>Profil relawan:</strong> nomor telepon, kota, keahlian, ketersediaan, dan bio. Semuanya opsional.</li>
+    <li><strong>Profil organisasi:</strong> nama organisasi, kontak, website, dan deskripsi.</li>
+    <li><strong>Pendaftaran:</strong> kegiatan yang Anda daftar, motivasi yang Anda tulis, dan statusnya.</li>
+    <li><strong>Teknis:</strong> log server (alamat IP, waktu akses) untuk keamanan dan penanganan gangguan.</li>
+  </ul>
+
+  <h2>Untuk apa data digunakan</h2>
+  <ul>
+    <li>Menjalankan layanan: mendaftarkan Anda ke kegiatan dan mengirim pemberitahuan status lewat email.</li>
+    <li>Keamanan: mencegah penyalahgunaan, seperti percobaan login berulang dan organisasi palsu.</li>
+  </ul>
+  <p>Kami tidak menjual data Anda dan tidak memakainya untuk iklan.</p>
+
+  <h2>Siapa yang dapat melihat data Anda</h2>
+  <ul>
+    <li>Saat Anda mendaftar ke kegiatan, penyelenggara melihat <strong>nama dan motivasi</strong> Anda.</li>
+    <li><strong>Email dan nomor telepon</strong> baru diperlihatkan ke penyelenggara setelah pendaftaran Anda <strong>diterima</strong>, agar mereka dapat menghubungi Anda.</li>
+    <li>Admin VolunteerMatch dapat melihat data akun organisasi untuk keperluan verifikasi.</li>
+  </ul>
+
+  <h2>Hak Anda</h2>
+  <p>
+    Sesuai Undang-Undang No. 27 Tahun 2022 tentang Pelindungan Data Pribadi, Anda berhak
+    mengakses, memperbaiki, dan menghapus data pribadi Anda. Anda dapat mengubah profil kapan
+    saja dan <%= link_to "menghapus akun", logged_in? ? edit_account_path : login_path %>
+    beserta seluruh datanya secara permanen.
+  </p>
+
+  <h2>Penyimpanan dan keamanan</h2>
+  <p>
+    Data disimpan di server database yang dilindungi dan dikirim melalui koneksi terenkripsi (HTTPS).
+    Data akun dihapus saat Anda menghapus akun. Cadangan database dapat menyimpan salinan
+    hingga masa retensi cadangan berakhir.
+  </p>
+
+  <h2>Kontak</h2>
+  <p>Pertanyaan tentang privasi dapat dikirim ke <%= mail_to ENV.fetch("PRIVACY_CONTACT_EMAIL", "privasi@volunteermatch.local") %>.</p>
+</article>

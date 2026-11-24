@@ -1,0 +1,67 @@
+<section class="hero">
+  <div class="hero__copy">
+    <p class="eyebrow">Platform relawan Indonesia</p>
+    <h1>Waktu Anda bisa jadi perubahan bagi orang lain.</h1>
+    <p class="lead">
+      VolunteerMatch mempertemukan relawan dengan organisasi sosial yang telah diverifikasi.
+      Cari kegiatan sesuai minat dan kota Anda, daftar dalam satu menit, dan pantau statusnya.
+    </p>
+    <div class="actions actions--spaced">
+      <%= link_to "Cari kegiatan", volunteer_events_path, class: "button" %>
+      <% unless logged_in? %>
+        <%= link_to "Daftar sebagai organisasi", new_user_path, class: "button button--secondary" %>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section class="steps">
+  <article class="card">
+    <p class="eyebrow">1 · Temukan</p>
+    <h3>Cari kegiatan</h3>
+    <p class="text-muted">Saring berdasarkan kategori, lokasi, dan tanggal.</p>
+  </article>
+  <article class="card">
+    <p class="eyebrow">2 · Daftar</p>
+    <h3>Ceritakan motivasi Anda</h3>
+    <p class="text-muted">Penyelenggara meninjau dan memberi kabar lewat email.</p>
+  </article>
+  <article class="card">
+    <p class="eyebrow">3 · Berkontribusi</p>
+    <h3>Hadir dan berdampak</h3>
+    <p class="text-muted">Pantau semua pendaftaran Anda dari satu dashboard.</p>
+  </article>
+</section>
+
+<section>
+  <div class="page-header">
+    <div>
+      <p class="eyebrow">Segera berlangsung</p>
+      <h2>Kegiatan terbaru</h2>
+    </div>
+    <%= link_to "Lihat semua →", volunteer_events_path %>
+  </div>
+
+  <% if @upcoming_events.any? %>
+    <div class="event-grid">
+      <% @upcoming_events.each do |event| %>
+        <article class="event-card card">
+          <div class="event-card__top">
+            <span class="badge"><%= event.category %></span>
+          </div>
+          <h3><%= link_to event.title, event %></h3>
+          <p class="text-muted"><%= truncate(event.description, length: 110) %></p>
+          <div class="event-card__meta">
+            <span><strong>Lokasi:</strong> <%= event.location %></span>
+            <span><strong>Mulai:</strong> <%= l event.starts_at, format: :long %></span>
+          </div>
+        </article>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <h3>Belum ada kegiatan terbuka</h3>
+      <p>Kegiatan baru dari organisasi terverifikasi akan muncul di sini.</p>
+    </div>
+  <% end %>
+</section>
