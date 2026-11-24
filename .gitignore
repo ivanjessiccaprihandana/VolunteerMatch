@@ -36,3 +36,8 @@
 /PostgreSQL*.exe
 /PostgreSQL*.yam
 /PostgreSQL*
+# Local environment files with secrets
+/.env
+/.env.*
+!/.env.example
+/tmp/mails

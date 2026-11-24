@@ -1,0 +1,41 @@
+# Production-like stack: the app plus PostgreSQL.
+#
+#   cp .env.example .env    # then fill in the values
+#   docker compose up -d --build
+#   docker compose exec web bin/rails admin:create EMAIL=you@example.org PASSWORD=...
+#
+# In real production, put a TLS-terminating proxy (Caddy, NGINX, Cloudflare,
+# or your platform's load balancer) in front of port 3000.
+services:
+  db:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: volunteermatch
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: volunteermatch_production
+    volumes:
+      - db-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U volunteermatch"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://volunteermatch:${POSTGRES_PASSWORD}@db:5432/volunteermatch_production
+    ports:
+      - "3000:3000"
+    volumes:
+      - storage:/rails/storage
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db-data:
+  storage:
